@@ -26,10 +26,11 @@ namespace Week1
         {
             var newState = Keyboard.GetState(); // Get the current state of the keyboard (which keys are pressed or released)
 
-           if (newState.IsKeyDown(Keys.A) && m_oldState.IsKeyUp(Keys.A)) // If the A key is pressed and it was not pressed before
-           {
+            if (newState.IsKeyDown(Keys.A) && m_oldState.IsKeyUp(Keys.A)) // If the A key is pressed and it was not pressed before
+            {
                 AddVectors();
-           }
+                SubtractVectors();
+            }
             m_oldState = newState; // Update the previous state of the keyboard
             base.Update(gameTime); // Call MonoGame's original Update method. This is important to keep the game running smoothly
         }
@@ -40,9 +41,23 @@ namespace Week1
             Vector2 a = new Vector2(3, 5); // Create a 2D vector with x=3 and y=5
             Vector2 b = new Vector2(2, -1); // Create another 2D vector with x=2 and y=-1
             Vector2 c = a + b; // Add 2 vectors together
-            
+
             Debug.WriteLine($"Vector a {a} + b {b} = {c}"); // Print the result to the debug console
         }
+
+        private void SubtractVectors()
+        {
+            Vector2 a = new Vector2(3, 5); // Create a 2D vector with x=3 and y=5
+            Vector2 b = new Vector2(2, -1); // Create another 2D vector with x=2 and y=-1
+            Vector2 c = b - a; // Subtract 2 vectors
+            Vector2 d = a - b; // Subtract 2 vectors
+
+            Debug.WriteLine($"Vector c mag: {c.Length()} c dir: {c}"); // Print the magnitude of vector c to the debug console
+            Debug.WriteLine($"Vector d mag: {d.Length()} d dir: {d}"); // Print the magnitude of vector d to the debug console
+        }
+
+
+
 
 
 
