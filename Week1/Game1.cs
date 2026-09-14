@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
 
-namespace Week1
+namespace Monogame
 {
     // Main game class. It inherits from MonoGame's Game class, which gives us Initialize, Update, Draw, etc
     public class Game1 : Game

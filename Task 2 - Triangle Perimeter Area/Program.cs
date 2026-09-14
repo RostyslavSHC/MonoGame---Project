@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Week1
 {
-    internal class Program
+    internal class Monogame
     {
         static void Main(string[] args)
         {
