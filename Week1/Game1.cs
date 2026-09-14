@@ -32,6 +32,7 @@ namespace Week1
                 SubtractVectors();
                 MultiplyVector();
                 CalculateDistance();
+                DotProduct();
             }
             m_oldState = newState; // Update the previous state of the keyboard
             base.Update(gameTime); // Call MonoGame's original Update method. This is important to keep the game running smoothly
@@ -75,6 +76,20 @@ namespace Week1
             Vector3 p2 = new Vector3(2, 1, 2); // Create another 3D vector with x=2, y=1, z=2
             float distance = Vector3.Distance(p1, p2); // Calculate distance between two vectors
             Debug.WriteLine($"Distance between {p1} and {p2}: {distance}"); // Print distance to debug console
+        }
+
+        private void DotProduct()
+        {
+            Vector3 source = new Vector3(0, 0, 0); // Create a 3D vector with x=0, y=0, z=0
+            Vector3 a = new Vector3(0, 2, 0); // Create another 3D vector with x=0, y=2, z=0
+            Vector3 b = new Vector3(1, 1, 0); // Create another 3D vector with x=1, y=1, z=0
+            Vector3 aVec = a - source; // Subtract two vectors to get a direction vector
+            Vector3 bVec = b - source; // Subtract two vectors to get a direction vector
+            aVec.Normalize(); // Normalize the direction vector to make it a unit vector (length of 1)
+            bVec.Normalize(); // Normalize the direction vector to make it a unit vector (length of 1)
+            float dot = Vector3.Dot(aVec, bVec); // Calculate the dot product of two vectors
+
+            Debug.WriteLine($"Dot = {dot}"); // Print the dot product to the debug console
         }
 
 
