@@ -57,10 +57,11 @@ namespace Week1
             Debug.WriteLine($"Vector d mag: {d.Length()} d dir: {d}"); // Print the magnitude of vector d to the debug console
         }
 
+        Vector3 pos = new Vector3(10, 10, 10); // Create a 3D vector with x=0, y=0, z=0
+
         private void MultiplyVector()
         {
-            Vector3 pos = new Vector3(0, 0, 0); // Create a 3D vector with x=0, y=0, z=0
-            Vector3 dest = new Vector3(1, 0, 0); // Create another 3D vector with x=1, y=0, z=0
+            Vector3 dest = new Vector3(0, 0, 0); // Create another 3D vector with x=1, y=0, z=0
             Vector3 dir = dest - pos; // Subtract two vectors to get a direction vector
             dir.Normalize(); // Normalize the direction vector to make it a unit vector (length of 1)
             pos += (dir * 0.1f); // Move the position 0.1 units in the direction of the direction vector
