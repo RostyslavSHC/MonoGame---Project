@@ -42,7 +42,7 @@ namespace Week1
 
             // Display the result
             Console.WriteLine($"Distance between source and destination: {distance}");
-            Console.WriteLine($"Number of steps needed: {steps}");
+            Console.WriteLine($"Number of steps needed: {steps}"); // Round up to the nearest whole number
         }
     }
 
