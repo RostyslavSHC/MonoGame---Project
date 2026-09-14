@@ -33,6 +33,7 @@ namespace Week1
                 MultiplyVector();
                 CalculateDistance();
                 DotProduct();
+                CrossProduct();
             }
             m_oldState = newState; // Update the previous state of the keyboard
             base.Update(gameTime); // Call MonoGame's original Update method. This is important to keep the game running smoothly
