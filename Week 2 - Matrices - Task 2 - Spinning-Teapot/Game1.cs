@@ -18,6 +18,11 @@ namespace Monogame
         private float m_rotation = 0f; // Variable that will be used to rotate the model
 
 
+        // EXTRA - Text
+        SpriteBatch m_spriteBatch; // SpriteBatch - Used to draw 2D things like text and images on the screen
+        SpriteFont m_font; // SpriteFont - Stores the font used to draw text
+
+
 
 
         // Constructor. Runs when Game1 is first created
@@ -42,6 +47,10 @@ namespace Monogame
         protected override void LoadContent()
         {
             m_model = Content.Load<Model>("Teapot");
+
+            // EXTRA - Text
+            m_spriteBatch = new SpriteBatch(GraphicsDevice);
+            m_font = Content.Load<SpriteFont>("Font");
         }
 
 
@@ -74,6 +83,20 @@ namespace Monogame
                 mesh.Draw(); // Draw the mesh
             }
 
+
+
+
+            // EXTRA - Text
+            m_spriteBatch.Begin();
+            // Vector2(X, Y)
+            m_spriteBatch.DrawString(m_font, $"Rotation: {m_rotation}", new Vector2(10, 10), Color.White);
+            m_spriteBatch.DrawString(m_font, "Hello, Rogerio", new Vector2(10, 30), Color.Crimson);
+            m_spriteBatch.DrawString(m_font, "I'm Rostyslav", new Vector2(10, 50), Color.Cyan);
+            m_spriteBatch.End();
+
+
+
+
             base.Draw(gameTime); // Call MonoGame's original Draw method
         }
 
@@ -85,7 +108,7 @@ namespace Monogame
             // World Matrix - Where the object is in a 3D space
             m_world = Matrix.CreateTranslation(new Vector3(0, 0, 0)); // Create a translation matrix to move the object to pos1
             // View Matrix - Where the camera is in a 3D space
-            m_view = Matrix.CreateLookAt(new Vector3(0, 0, 4), new Vector3(0, 0, 0), Vector3.Up); // Create a view matrix to look at the object from above
+            m_view = Matrix.CreateLookAt(new Vector3(0, 0, 2), new Vector3(0, 0, 0), Vector3.Up); // Create a view matrix to look at the object from above
             // Projection Matrix - How the 3D object is projected onto the 2D screen
             m_projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45f), m_device.GraphicsDevice.Viewport.AspectRatio, 0.1f, 100f); // Create a projection matrix to project the object onto the screen
 
