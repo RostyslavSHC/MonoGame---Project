@@ -1,6 +1,7 @@
 <Solution>
-  <Project Path="Task 1 - Vector Distance Steps/Week 2 - Task 1 - Vector Distance Steps.csproj" Id="043eeb8d-d002-4514-842d-fa6bf5db7d7f" />
-  <Project Path="Task 2 - Triangle Perimeter Area/Week 2 - Task 2 - Triangle Perimeter Area.csproj" Id="24d1d391-2c5f-4f39-aaa7-56ec36d05f6e" />
-  <Project Path="Week 2 - Task 3 - Cross Product Cuboid/Week 2 - Task 3 - Cross Product Cuboid.csproj" Id="29e8d0ff-5da0-42b7-8cd8-3aba332a7bbb" />
+  <Project Path="Task 1 - Vector Distance Steps/Week 2 - Vectors - Task 1 - Vector Distance Steps.csproj" Id="043eeb8d-d002-4514-842d-fa6bf5db7d7f" />
+  <Project Path="Task 2 - Triangle Perimeter Area/Week 2 - Vectors - Task 2 - Triangle Perimeter Area.csproj" Id="24d1d391-2c5f-4f39-aaa7-56ec36d05f6e" />
+  <Project Path="Week 2 - Matrices - Task 1 - Matrix Operations/Week 2 - Matrices - Task 1 - Matrix Operations.csproj" Id="3df6426b-9222-4667-8a80-b941aff733d3" />
+  <Project Path="Week 2 - Task 3 - Cross Product Cuboid/Week 2 - Vectors - Task 3 - Cross Product Cuboid.csproj" Id="29e8d0ff-5da0-42b7-8cd8-3aba332a7bbb" />
   <Project Path="Week1/Week2.csproj" />
 </Solution>
