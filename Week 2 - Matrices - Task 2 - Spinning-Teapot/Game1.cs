@@ -91,7 +91,7 @@ namespace Monogame
             // Vector2(X, Y)
             m_spriteBatch.DrawString(m_font, $"Rotation: {m_rotation}", new Vector2(10, 10), Color.White);
             m_spriteBatch.DrawString(m_font, "Hello, Rogerio", new Vector2(10, 30), Color.Crimson);
-            m_spriteBatch.DrawString(m_font, "I'm Rostyslav", new Vector2(10, 50), Color.Cyan);
+            m_spriteBatch.DrawString(m_font, "I am Rostyslav", new Vector2(10, 50), Color.Cyan);
             m_spriteBatch.End();
 
 
