@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Monogame
 {
@@ -34,10 +35,35 @@ namespace Monogame
                 CalculateDistance();
                 DotProduct();
                 CrossProduct();
+
+
+
+                MatrixOperations();
             }
             m_oldState = newState; // Update the previous state of the keyboard
             base.Update(gameTime); // Call MonoGame's original Update method. This is important to keep the game running smoothly
+
+
+
+
+
+
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         private void AddVectors()
@@ -114,5 +140,83 @@ namespace Monogame
 
 
 
+
+
+
+
+
+        // Matrices
+        private void MatrixOperations()
+        {
+            Debug.WriteLine("\n\n\n\n\n");
+
+            Matrix matrix = Matrix.Identity; // Create an identity matrix (no transformation)
+            Debug.WriteLine(matrix); // Print the identity matrix to the debug console
+
+            Matrix matrix1 = new Matrix(new Vector4(1, 1, 1, 1), new Vector4(2, 2, 2, 2),new Vector4(3, 3, 3, 3), new Vector4(4, 4, 4, 4)); // Create a matrix with 4 rows and 4 columns
+            Matrix matrix2 = new Matrix(new Vector4(5, 5, 5, 5), new Vector4(6, 6, 6, 6), new Vector4(7, 7, 7, 7), new Vector4(8, 8, 8, 8)); // Create another matrix with 4 rows and 4 columns
+
+            Debug.WriteLine($"Matrix 1 = {matrix1}"); // Print the first matrix to the debug console
+            Debug.WriteLine($"Matrix 2 = {matrix2}"); // Print the second matrix to the debug console
+            Debug.WriteLine($"Added = {matrix1 + matrix2}"); // Print the result of adding the two matrices to the debug console
+            Debug.WriteLine($"Subtracted = {matrix1 - matrix2}"); // Print the result of subtracting the two matrices to the debug console
+            Debug.WriteLine($"Multiplied = {matrix1 * matrix2}"); // Print the result of multiplying the two matrices to the debug console
+
+            // Different results
+            Debug.WriteLine("\n");
+            Debug.WriteLine("Result of multiplying matrices depends on the order of multiplication");
+            Debug.WriteLine($"Matrix 1 * Matrix 2 = {matrix1 * matrix2}");
+            Debug.WriteLine($"Matrix 2 * Matrix 1 = {matrix2 * matrix1}");
+
+            Debug.WriteLine("\n");
+            Debug.WriteLine("Multiply by Identity matrix won't change the answer");
+            Debug.WriteLine($"Identity * Matrix 2 = {Matrix.Identity * matrix2}");
+            Debug.WriteLine($"Matrix 2 * Identity = {matrix2 * Matrix.Identity}");
+
+
+            Debug.WriteLine("\n");
+            Debug.WriteLine("Transformations");
+            Vector3 pos1 = new Vector3(0, 0, 0); // Create a 3D vector with x=0, y=0, z=0
+            Vector3 dest1 = new Vector3(1, 2, 3); // Create another 3D vector with x=1, y=2, z=3
+            Matrix objectPos1 = Matrix.CreateTranslation(pos1); // Create a translation matrix to move the object to pos1
+            Matrix objectPos2 = Matrix.CreateTranslation(dest1); // Create a translation matrix to move the object to dest1
+            Debug.WriteLine($"ObjectPos1 = {objectPos1}"); // Print the first matrix to the debug console
+            Debug.WriteLine($"ObjectPos2 = {objectPos2}"); // Print the second matrix to the debug console
+
+
+            Debug.WriteLine("\n");
+            Debug.WriteLine("Scaling");
+            Vector3 scale = new Vector3(2, 2 ,2); // Create a 3D vector with x=2, y=2, z=2
+            Matrix objectScale = Matrix.CreateScale(scale); // Create a scaling matrix to scale the object by 2 in all directions
+            Debug.WriteLine($"ObjectScale = {objectScale}"); // Print the scaling matrix to the debug console
+
+            Debug.WriteLine("\n");
+            Debug.WriteLine("Rotation");
+            Vector3 rotate = new Vector3(0, 0.1f, 0); // Create a 3D vector with x=0, y=0.1, z=0
+            Matrix objectRotate = Matrix.CreateRotationY(rotate.Y); // Create a rotation matrix to rotate the object around the y-axis by 0.1 radians
+            Debug.WriteLine($"ObjectRotate = {objectRotate}"); // Print the rotation matrix to the debug console
+
+
+
+
+
+
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+        }
     }
-}

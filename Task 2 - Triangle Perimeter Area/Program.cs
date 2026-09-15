@@ -56,6 +56,8 @@ namespace Week1
             Console.WriteLine($"Perimeter of the triangle: {perimeter}"); // Print the perimeter of the triangle
             Console.WriteLine($"Area of the triangle: {area}"); // Print the area of the triangle
 
+
+
         }
     }
 
