@@ -45,22 +45,14 @@ namespace Monogame
 
         protected override void LoadContent()
         {
-            // 8 vertices = 4 separate lines
             VertexPositionColor[] vertices = new VertexPositionColor[8];
 
-            // Line 1
             vertices[0] = new VertexPositionColor(new Vector3(-0.8f, -0.6f, 0), Color.Red);
             vertices[1] = new VertexPositionColor(new Vector3(-0.7f, 0.8f, 0), Color.Green);
-
-            // Line 2
             vertices[2] = new VertexPositionColor(new Vector3(-0.3f, -0.1f, 0), Color.Blue);
             vertices[3] = new VertexPositionColor(new Vector3(0.1f, 0.4f, 0), Color.Red);
-
-            // Line 3
             vertices[4] = new VertexPositionColor(new Vector3(0.2f, -0.4f, 0), Color.Green);
             vertices[5] = new VertexPositionColor(new Vector3(0.6f, 0.1f, 0), Color.Blue);
-
-            // Line 4
             vertices[6] = new VertexPositionColor(new Vector3(0.6f, -0.7f, 0), Color.Red);
             vertices[7] = new VertexPositionColor(new Vector3(0.9f, -0.2f, 0), Color.Green);
 
@@ -97,7 +89,7 @@ namespace Monogame
             foreach (EffectPass pass in m_basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                GraphicsDevice.DrawPrimitives(PrimitiveType.LineList, 0, 4);
+                GraphicsDevice.DrawPrimitives(PrimitiveType.LineStrip, 0, 7);
             }
 
             base.Draw(gameTime);
