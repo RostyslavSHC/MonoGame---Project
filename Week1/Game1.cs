@@ -46,18 +46,14 @@ namespace Monogame
 
         protected override void LoadContent()
         {
-            /*
             VertexPositionColor[] vertices = new VertexPositionColor[3];
+
             vertices[0] = new VertexPositionColor(new Vector3(0, 1, 0), Color.Red);
             vertices[1] = new VertexPositionColor(new Vector3(+0.5f, 0, 0), Color.Green);
             vertices[2] = new VertexPositionColor(new Vector3(-0.5f, 0, 0), Color.Blue);
 
             m_vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), 3, BufferUsage.WriteOnly);
-            m_vertexBuffer.SetData<VertexPositionColor>(vertices);
-            */
-
-            CreateVertices();
-            CreateIndices();
+            m_vertexBuffer.SetData(vertices);
         }
 
 
@@ -77,7 +73,6 @@ namespace Monogame
             #region ConfigureDevice
             GraphicsDevice.Clear(Color.Black);
             GraphicsDevice.SetVertexBuffer(m_vertexBuffer);
-            GraphicsDevice.Indices = m_indexBuffer;
             #endregion ConfigureDevice
 
 
@@ -85,8 +80,7 @@ namespace Monogame
             foreach (EffectPass pass in m_basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                // GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 1);
-                GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 20);
+                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 1);
             }
 
             base.Draw(gameTime);
@@ -104,83 +98,6 @@ namespace Monogame
             base.Update(gameTime); // Call MonoGame's original Update method. This is important to keep the game running smoothly
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        private void CreateVertices()
-        {
-            // A temporary array, with 12 items in it, because the icosahedron has 12 distinct vertices
-            VertexPositionColor[] vertices = new VertexPositionColor[12];
-
-            vertices[0] = new VertexPositionColor(new Vector3(-0.26286500f, 0.00000000f, 0.42532500f), Color.Red);
-            vertices[1] = new VertexPositionColor(new Vector3(0.26286500f, 0.00000000f, 0.42532500f), Color.Orange);
-            vertices[2] = new VertexPositionColor(new Vector3(-0.26286500f, 0.00000000f, -0.42532500f), Color.Yellow);
-            vertices[3] = new VertexPositionColor(new Vector3(0.26286500f, 0.00000000f, -0.42532500f), Color.Green);
-            vertices[4] = new VertexPositionColor(new Vector3(0.00000000f, 0.42532500f, 0.26286500f), Color.Blue);
-            vertices[5] = new VertexPositionColor(new Vector3(0.00000000f, 0.42532500f, -0.26286500f), Color.Indigo);
-            vertices[6] = new VertexPositionColor(new Vector3(0.00000000f, -0.42532500f, 0.26286500f), Color.Purple);
-            vertices[7] = new VertexPositionColor(new Vector3(0.00000000f, -0.42532500f, -0.26286500f), Color.White);
-            vertices[8] = new VertexPositionColor(new Vector3(0.42532500f, 0.26286500f, 0.00000000f), Color.Cyan);
-            vertices[9] = new VertexPositionColor(new Vector3(-0.42532500f, 0.26286500f, 0.00000000f), Color.Black);
-            vertices[10] = new VertexPositionColor(new Vector3(0.42532500f, -0.26286500f, 0.00000000f), Color.DodgerBlue);
-            vertices[11] = new VertexPositionColor(new Vector3(-0.42532500f, -0.26286500f, 0.00000000f), Color.Crimson);
-
-            m_vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), 12, BufferUsage.WriteOnly);
-            m_vertexBuffer.SetData<VertexPositionColor>(vertices);
-        }
-
-
-
-
-
-
-
-
-
-        private void CreateIndices()
-        {
-            short[] indices = new short[60];
-
-            indices[0] = 0; indices[1] = 6; indices[2] = 1;
-            indices[3] = 0; indices[4] = 11; indices[5] = 6;
-            indices[6] = 1; indices[7] = 4; indices[8] = 0;
-            indices[9] = 1; indices[10] = 8; indices[11] = 4;
-            indices[12] = 1; indices[13] = 10; indices[14] = 8;
-            indices[15] = 2; indices[16] = 5; indices[17] = 3;
-            indices[18] = 2; indices[19] = 9; indices[20] = 5;
-            indices[21] = 2; indices[22] = 11; indices[23] = 9;
-            indices[24] = 3; indices[25] = 7; indices[26] = 2;
-            indices[27] = 3; indices[28] = 10; indices[29] = 7;
-            indices[30] = 4; indices[31] = 8; indices[32] = 5;
-            indices[33] = 4; indices[34] = 9; indices[35] = 0;
-            indices[36] = 5; indices[37] = 8; indices[38] = 3;
-            indices[39] = 5; indices[40] = 9; indices[41] = 4;
-            indices[42] = 6; indices[43] = 10; indices[44] = 1;
-            indices[45] = 6; indices[46] = 11; indices[47] = 7;
-            indices[48] = 7; indices[49] = 10; indices[50] = 6;
-            indices[51] = 7; indices[52] = 11; indices[53] = 2;
-            indices[54] = 8; indices[55] = 10; indices[56] = 3;
-            indices[57] = 9; indices[58] = 11; indices[59] = 0;
-
-
-
-
-            m_indexBuffer = new IndexBuffer(GraphicsDevice, typeof(short), indices.Length, BufferUsage.WriteOnly);
-            m_indexBuffer.SetData(indices);
-        }
 
 
 
