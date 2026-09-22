@@ -17,6 +17,8 @@ namespace Monogame
         private Matrix m_view = Matrix.Identity; // A matrix that will be used to transform the camera
         private Matrix m_projection = Matrix.Identity; // A matrix that will be used to project the model onto the screen
 
+        private float m_rotation = 0.0f;
+
 
         // Constructor. Runs when Game1 is first created
         public Game1()
@@ -31,11 +33,15 @@ namespace Monogame
         {
             m_basicEffect = new BasicEffect(GraphicsDevice);
 
-            m_world = Matrix.CreateTranslation(new Vector3(0, 0, 0));
+            // Icosahedron world position
+            m_world = Matrix.CreateTranslation(new Vector3(0.5f, 0.5f, 0.5f));
+
+            // Camera
             m_view = Matrix.CreateLookAt(new Vector3(0, 0, 3),   // Camera position
                                          new Vector3(0, 0, 0),   // Camera target
-                                         Vector3.Up);            // Camera up
+                                             Vector3.Up);             // Camera up
 
+            // Perspective
             m_projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), m_device.GraphicsDevice.Viewport.AspectRatio, 0.1f, 100f);
 
             base.Initialize();
@@ -101,7 +107,10 @@ namespace Monogame
         // This method is called once per frame. It is where we put our game logic, like checking for input, updating game objects, etc.
         protected override void Update(GameTime gameTime)
         {
-            base.Update(gameTime); // Call MonoGame's original Update method. This is important to keep the game running smoothly
+            m_rotation += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            m_world = Matrix.CreateRotationY(m_rotation) * Matrix.CreateTranslation(new Vector3(0.5f, 0.5f, 0.5f));
+
+            base.Update(gameTime);
         }
 
 
