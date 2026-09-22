@@ -52,6 +52,8 @@ namespace Monogame
             vertices[1] = new VertexPositionColor(new Vector3(+0.5f, 0, 0), Color.Green);
             vertices[2] = new VertexPositionColor(new Vector3(-0.5f, 0, 0), Color.Blue);
 
+
+
             m_vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), 3, BufferUsage.WriteOnly);
             m_vertexBuffer.SetData(vertices);
         }
