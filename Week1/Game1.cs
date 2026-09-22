@@ -18,6 +18,7 @@ namespace Monogame
         private Matrix m_world = Matrix.Identity; // A matrix that will be used to transform the model
         private Matrix m_view = Matrix.Identity; // A matrix that will be used to transform the camera
         private Matrix m_projection = Matrix.Identity; // A matrix that will be used to project the model onto the screen
+        private Texture m_metalTex; // Our metal texture
 
 
 
@@ -49,6 +50,7 @@ namespace Monogame
             m_spriteBatch = new SpriteBatch(GraphicsDevice);
             m_arial12 = Content.Load<SpriteFont>("Arial12");
             m_myShader = Content.Load<Effect>("MyShader");
+            m_metalTex = Content.Load<Texture2D>("Metal"); // Load our texture
 
             // Set up matrices
             m_world = Matrix.CreateTranslation(new Vector3(0, 0, 0));
@@ -66,13 +68,13 @@ namespace Monogame
         // LoadContent - Used to load content and it is called once when the game starts
         protected override void LoadContent()
         {
-            VertexPositionColor[] vertices = new VertexPositionColor[3];
-            vertices[0] = new VertexPositionColor(new Vector3(0, 1, 0), Color.Red);
-            vertices[1] = new VertexPositionColor(new Vector3(+0.5f, 0, 0), Color.Green);
-            vertices[2] = new VertexPositionColor(new Vector3(-0.5f, 0, 0), Color.Blue);
+            VertexPositionTexture[] vertices = new VertexPositionTexture[3];
+            vertices[0] = new VertexPositionTexture(new Vector3(0, 1, 0), new Vector2(0.5f, 0));
+            vertices[1] = new VertexPositionTexture(new Vector3(+0.5f, 0, 0), new Vector2(1, 1));
+            vertices[2] = new VertexPositionTexture(new Vector3(-0.5f, 0, 0), new Vector2(0, 1));
 
-            m_vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), 3, BufferUsage.WriteOnly);
-            m_vertexBuffer.SetData<VertexPositionColor>(vertices);
+            m_vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionTexture), 3, BufferUsage.WriteOnly);
+            m_vertexBuffer.SetData<VertexPositionTexture>(vertices);
         }
 
 
@@ -81,37 +83,24 @@ namespace Monogame
 
         protected override void Draw(GameTime gameTime)
         {
-            // Set up the shader
             #region ConfigureMyEffect
             m_myShader.Parameters["WorldViewProjection"].SetValue(m_world * m_view * m_projection);
+            m_myShader.Parameters["Texture"].SetValue(m_metalTex);
             #endregion ConfigureMyEffect
 
-            // Set up the graphics device / Color
+
             #region ConfigureDevice
             GraphicsDevice.Clear(Color.Black);
             GraphicsDevice.SetVertexBuffer(m_vertexBuffer);
             #endregion ConfigureDevice
 
-            // Font / Text
-            m_spriteBatch.Begin();
-            m_spriteBatch.DrawString(m_arial12, "Test String", new Vector2(10, 10), Color.Orange);
-            m_spriteBatch.DrawString(m_arial12, "Test String", new Vector2(50, 50), Color.Orange, 0, new Vector2(0, 0), 2, SpriteEffects.None, 0.5f);
-            m_spriteBatch.DrawString(m_arial12, "Test String", new Vector2(100, 100), Color.Orange, 0, new Vector2(0, 0), 1, SpriteEffects.FlipHorizontally, 0.5f);
 
-            string output = "Test String";
-            Vector2 fontPos = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
-            Vector2 origin = m_arial12.MeasureString(output) / 2;
-            m_spriteBatch.DrawString(m_arial12, output, fontPos, Color.Orange, 0, origin, 1, SpriteEffects.None, 0.5f);
-            m_spriteBatch.End();
-
-            // Render / Draw
             #region Render
             foreach (EffectPass pass in m_myShader.Techniques["BasicColorDrawing"].Passes)
             {
                 pass.Apply();
                 GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 1);
             }
-
             base.Draw(gameTime);
             #endregion Render
         }
@@ -121,7 +110,7 @@ namespace Monogame
 
 
 
- 
+
 
 
 
