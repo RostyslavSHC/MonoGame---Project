@@ -10,7 +10,6 @@ namespace Monogame
         GraphicsDeviceManager m_device; // Variable that manages the graphics device and settings
         BasicEffect m_basicEffect; // Pre-made MonoGame shaders used for rendering
         VertexBuffer m_vertexBuffer; // Stores vertex data that will be sent to the GPU
-        private IndexBuffer m_indexBuffer; // Stores index data that will be sent to the GPU
 
         // Matrices used for rendering
         private Matrix m_world = Matrix.Identity; // A matrix that will be used to transform the model
@@ -82,7 +81,10 @@ namespace Monogame
             foreach (EffectPass pass in m_basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 1);
+                //GraphicsDevice.DrawPrimitives(PrimitiveType.LineList, 0, 4); // Line List
+                //GraphicsDevice.DrawPrimitives(PrimitiveType.LineStrip, 0, 7); // Line Strip
+                //GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 2); // Triangle List
+                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 6);// Triangle Strip
             }
 
             base.Draw(gameTime);
@@ -99,6 +101,8 @@ namespace Monogame
         {
             base.Update(gameTime); // Call MonoGame's original Update method. This is important to keep the game running smoothly
         }
+
+
 
 
 
