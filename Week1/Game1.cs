@@ -45,16 +45,17 @@ namespace Monogame
 
         protected override void LoadContent()
         {
-            VertexPositionColor[] vertices = new VertexPositionColor[8];
+            VertexPositionColor[] vertices = new VertexPositionColor[6];
 
+            // Triangle 1
             vertices[0] = new VertexPositionColor(new Vector3(-0.8f, -0.6f, 0), Color.Red);
             vertices[1] = new VertexPositionColor(new Vector3(-0.7f, 0.8f, 0), Color.Green);
             vertices[2] = new VertexPositionColor(new Vector3(-0.3f, -0.1f, 0), Color.Blue);
-            vertices[3] = new VertexPositionColor(new Vector3(0.1f, 0.4f, 0), Color.Red);
-            vertices[4] = new VertexPositionColor(new Vector3(0.2f, -0.4f, 0), Color.Green);
-            vertices[5] = new VertexPositionColor(new Vector3(0.6f, 0.1f, 0), Color.Blue);
-            vertices[6] = new VertexPositionColor(new Vector3(0.6f, -0.7f, 0), Color.Red);
-            vertices[7] = new VertexPositionColor(new Vector3(0.9f, -0.2f, 0), Color.Green);
+
+            // Triangle 2
+            vertices[3] = new VertexPositionColor(new Vector3(0.1f, -0.2f, 0), Color.Red);
+            vertices[4] = new VertexPositionColor(new Vector3(0.3f, 0.5f, 0), Color.Green);
+            vertices[5] = new VertexPositionColor(new Vector3(0.7f, 0.1f, 0), Color.Blue);
 
             m_vertexBuffer = new VertexBuffer(
                 GraphicsDevice,
@@ -89,7 +90,7 @@ namespace Monogame
             foreach (EffectPass pass in m_basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                GraphicsDevice.DrawPrimitives(PrimitiveType.LineStrip, 0, 7);
+                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 2);
             }
 
             base.Draw(gameTime);
