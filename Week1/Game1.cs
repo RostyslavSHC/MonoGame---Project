@@ -11,10 +11,16 @@ namespace Monogame
         BasicEffect m_basicEffect; // Pre-made MonoGame shaders used for rendering
         VertexBuffer m_vertexBuffer; // Stores vertex data that will be sent to the GPU
 
+
         // Matrices used for rendering
         private Matrix m_world = Matrix.Identity; // A matrix that will be used to transform the model
         private Matrix m_view = Matrix.Identity; // A matrix that will be used to transform the camera
         private Matrix m_projection = Matrix.Identity; // A matrix that will be used to project the model onto the screen
+
+        private PrimitiveType m_primitiveType;
+        private int m_primitiveCount;
+
+        private int m_lastDemo = -1;
 
 
         // Constructor. Runs when Game1 is first created
@@ -45,16 +51,10 @@ namespace Monogame
 
         protected override void LoadContent()
         {
-            VertexPositionColor[] vertices = new VertexPositionColor[3];
-
-            vertices[0] = new VertexPositionColor(new Vector3(0, 1, 0), Color.Red);
-            vertices[1] = new VertexPositionColor(new Vector3(+0.5f, 0, 0), Color.Green);
-            vertices[2] = new VertexPositionColor(new Vector3(-0.5f, 0, 0), Color.Blue);
-
-
-
-            m_vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), 3, BufferUsage.WriteOnly);
-            m_vertexBuffer.SetData(vertices);
+            //CreateLineList();
+            //CreateLineStrip();
+            //CreateTriangleList();
+            //CreateTriangleStrip();
         }
 
 
@@ -81,10 +81,7 @@ namespace Monogame
             foreach (EffectPass pass in m_basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                //GraphicsDevice.DrawPrimitives(PrimitiveType.LineList, 0, 4); // Line List
-                //GraphicsDevice.DrawPrimitives(PrimitiveType.LineStrip, 0, 7); // Line Strip
-                //GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 2); // Triangle List
-                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 6);// Triangle Strip
+                GraphicsDevice.DrawPrimitives(m_primitiveType, 0, m_primitiveCount);
             }
 
             base.Draw(gameTime);
@@ -95,17 +92,149 @@ namespace Monogame
 
 
 
-
+        /*
         // This method is called once per frame. It is where we put our game logic, like checking for input, updating game objects, etc.
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime); // Call MonoGame's original Update method. This is important to keep the game running smoothly
+        }
+        */
+
+        protected override void Update(GameTime gameTime)
+        {
+            int demo = (int)(gameTime.TotalGameTime.TotalSeconds / 3) % 4;
+
+            if (demo != m_lastDemo)
+            {
+                m_lastDemo = demo;
+
+                if (demo == 0) CreateLineList();
+                if (demo == 1) CreateLineStrip();
+                if (demo == 2) CreateTriangleList();
+                if (demo == 3) CreateTriangleStrip();
+            }
+
+            base.Update(gameTime);
         }
 
 
 
 
 
+
+
+
+
+
+
+        private void CreateLineList()
+        {
+            VertexPositionColor[] vertices = new VertexPositionColor[8];
+
+            vertices[0] = new VertexPositionColor(new Vector3(-0.8f, -0.6f, 0), Color.Red);
+            vertices[1] = new VertexPositionColor(new Vector3(-0.7f, 0.8f, 0), Color.Green);
+
+            vertices[2] = new VertexPositionColor(new Vector3(-0.3f, -0.1f, 0), Color.Blue);
+            vertices[3] = new VertexPositionColor(new Vector3(0.1f, 0.4f, 0), Color.Red);
+
+            vertices[4] = new VertexPositionColor(new Vector3(0.2f, -0.4f, 0), Color.Green);
+            vertices[5] = new VertexPositionColor(new Vector3(0.6f, 0.1f, 0), Color.Blue);
+
+            vertices[6] = new VertexPositionColor(new Vector3(0.6f, -0.7f, 0), Color.Red);
+            vertices[7] = new VertexPositionColor(new Vector3(0.9f, -0.2f, 0), Color.Green);
+
+            m_vertexBuffer = new VertexBuffer(
+                GraphicsDevice,
+                typeof(VertexPositionColor),
+                vertices.Length,
+                BufferUsage.WriteOnly);
+
+            m_vertexBuffer.SetData(vertices);
+
+            m_primitiveType = PrimitiveType.LineList;
+            m_primitiveCount = 4;
+        }
+
+
+        private void CreateLineStrip()
+        {
+            VertexPositionColor[] vertices = new VertexPositionColor[8];
+
+            vertices[0] = new VertexPositionColor(new Vector3(-0.8f, -0.6f, 0), Color.Red);
+            vertices[1] = new VertexPositionColor(new Vector3(-0.7f, 0.8f, 0), Color.Green);
+            vertices[2] = new VertexPositionColor(new Vector3(-0.3f, -0.1f, 0), Color.Blue);
+            vertices[3] = new VertexPositionColor(new Vector3(0.1f, 0.4f, 0), Color.Red);
+            vertices[4] = new VertexPositionColor(new Vector3(0.2f, -0.4f, 0), Color.Green);
+            vertices[5] = new VertexPositionColor(new Vector3(0.6f, 0.1f, 0), Color.Blue);
+            vertices[6] = new VertexPositionColor(new Vector3(0.6f, -0.7f, 0), Color.Red);
+            vertices[7] = new VertexPositionColor(new Vector3(0.9f, -0.2f, 0), Color.Green);
+
+            m_vertexBuffer = new VertexBuffer(
+                GraphicsDevice,
+                typeof(VertexPositionColor),
+                vertices.Length,
+                BufferUsage.WriteOnly);
+
+            m_vertexBuffer.SetData(vertices);
+
+            m_primitiveType = PrimitiveType.LineStrip;
+            m_primitiveCount = 7;
+        }
+
+
+
+
+        private void CreateTriangleList()
+        {
+            VertexPositionColor[] vertices = new VertexPositionColor[6];
+
+            // Triangle 1
+            vertices[0] = new VertexPositionColor(new Vector3(-0.8f, -0.6f, 0), Color.Red);
+            vertices[1] = new VertexPositionColor(new Vector3(-0.7f, 0.8f, 0), Color.Green);
+            vertices[2] = new VertexPositionColor(new Vector3(-0.3f, -0.1f, 0), Color.Blue);
+
+            // Triangle 2
+            vertices[3] = new VertexPositionColor(new Vector3(0.1f, -0.2f, 0), Color.Red);
+            vertices[4] = new VertexPositionColor(new Vector3(0.3f, 0.5f, 0), Color.Green);
+            vertices[5] = new VertexPositionColor(new Vector3(0.7f, 0.1f, 0), Color.Blue);
+
+            m_vertexBuffer = new VertexBuffer(
+                GraphicsDevice,
+                typeof(VertexPositionColor),
+                vertices.Length,
+                BufferUsage.WriteOnly);
+
+            m_vertexBuffer.SetData(vertices);
+
+            m_primitiveType = PrimitiveType.TriangleList;
+            m_primitiveCount = 2;
+        }
+
+
+        private void CreateTriangleStrip()
+        {
+            VertexPositionColor[] vertices = new VertexPositionColor[8];
+
+            vertices[0] = new VertexPositionColor(new Vector3(-0.81f, -0.56f, 0), Color.Red);
+            vertices[1] = new VertexPositionColor(new Vector3(-0.69f, 0.56f, 0), Color.Green);
+            vertices[2] = new VertexPositionColor(new Vector3(-0.56f, -0.19f, 0), Color.Blue);
+            vertices[3] = new VertexPositionColor(new Vector3(-0.19f, 0.19f, 0), Color.Red);
+            vertices[4] = new VertexPositionColor(new Vector3(-0.06f, -0.31f, 0), Color.Green);
+            vertices[5] = new VertexPositionColor(new Vector3(0.19f, -0.06f, 0), Color.Blue);
+            vertices[6] = new VertexPositionColor(new Vector3(0.19f, -0.56f, 0), Color.Red);
+            vertices[7] = new VertexPositionColor(new Vector3(0.81f, -0.06f, 0), Color.Green);
+
+            m_vertexBuffer = new VertexBuffer(
+                GraphicsDevice,
+                typeof(VertexPositionColor),
+                vertices.Length,
+                BufferUsage.WriteOnly);
+
+            m_vertexBuffer.SetData(vertices);
+
+            m_primitiveType = PrimitiveType.TriangleStrip;
+            m_primitiveCount = 6;
+        }
 
 
 
