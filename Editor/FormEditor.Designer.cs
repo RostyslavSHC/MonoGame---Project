@@ -86,6 +86,10 @@
             splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             splitContainer.Location = new System.Drawing.Point(0, 24);
             splitContainer.Name = "splitContainer";
+            // 
+            // splitContainer.Panel1
+            // 
+            splitContainer.Panel1.SizeChanged += splitContainer_Panel1_SizeChanged;
             splitContainer.Size = new System.Drawing.Size(800, 404);
             splitContainer.SplitterDistance = 637;
             splitContainer.TabIndex = 2;
@@ -106,6 +110,7 @@
             MainMenuStrip = menuStrip1;
             Name = "FormEditor";
             Text = "Our Cool Editor";
+            SizeChanged += FormEditor_SizeChanged;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             statusStrip1.ResumeLayout(false);

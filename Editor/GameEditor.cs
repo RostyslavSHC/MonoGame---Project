@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 // Groups this code inside the Editor project
@@ -52,6 +53,7 @@ namespace Editor
         {
             m_level = new(); // Creates the level
             m_level.LoadContent(Content); // Loads level's files and assets
+            AdjustAspectRatio(); // Adjusts the aspect ratio
             /*
             m_myShader = Content.Load<Effect>("MyShader"); // Loads the shader
             m_metalTexture = Content.Load<Texture>("Metal"); // Loads the texture
@@ -76,6 +78,13 @@ namespace Editor
             // m_teapot.Render(m_camera.View, m_camera.Projection); // Draws the 3D model
             m_level.Render(); // Draws the level
             base.Draw(gameTime); // Runs MonoGame's normal drawing
+        }
+
+        // Adjusts the aspect ratio of the camera
+        public void AdjustAspectRatio()
+        {
+            Camera c = m_level.GetCamera(); // Gets the camera
+            c.Update(c.Position, m_graphics.GraphicsDevice.Viewport.AspectRatio); // Updates the camera
         }
     }
 }
