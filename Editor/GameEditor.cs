@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using GUI.Editor;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Drawing.Drawing2D;
@@ -15,9 +16,11 @@ namespace Editor
         private Texture m_metalTexture; // Stores the texture
 
 
+        internal Project Project { get; set; } // Stores the project
+
         private GraphicsDeviceManager m_graphics; // Manages the graphics device
         private FormEditor m_parent; // Stores the main editor window
-        private Level m_level; // Stores the level
+        // private Level m_level; // Stores the level
 
         public GameEditor() // Runs when GameEditor is created
         {
@@ -51,9 +54,12 @@ namespace Editor
         // Used to load game files and assets
         protected override void LoadContent()
         {
+            /*
             m_level = new(); // Creates the level
             m_level.LoadContent(Content); // Loads level's files and assets
             AdjustAspectRatio(); // Adjusts the aspect ratio
+            */
+
             /*
             m_myShader = Content.Load<Effect>("MyShader"); // Loads the shader
             m_metalTexture = Content.Load<Texture>("Metal"); // Loads the texture
@@ -76,14 +82,17 @@ namespace Editor
             GraphicsDevice.Clear(Color.CornflowerBlue); // Clears the screen with a blue color
 
             // m_teapot.Render(m_camera.View, m_camera.Projection); // Draws the 3D model
-            m_level.Render(); // Draws the level
+            // m_level.Render(); // Draws the level
+
+            if (Project != null) Project.Render(); // Draws the project
             base.Draw(gameTime); // Runs MonoGame's normal drawing
         }
 
         // Adjusts the aspect ratio of the camera
         public void AdjustAspectRatio()
         {
-            Camera c = m_level.GetCamera(); // Gets the camera
+            if (Project == null) return; // If the project is not loaded, do nothing
+            Camera c = Project.CurrentLevel.GetCamera(); // Gets the camera
             c.Update(c.Position, m_graphics.GraphicsDevice.Viewport.AspectRatio); // Updates the camera
         }
     }
