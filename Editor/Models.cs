@@ -55,7 +55,7 @@ namespace Editor
 
         public void Render(Matrix _view, Matrix _projection) // Receives camera view matrix and camera projection matrix
         {
-            m_position.X += 0.001f; // Slowly moves the model on the X axis
+            // m_position.X += 0.001f; // Slowly moves the model on the X axis. I commented it because othervise teapot is tooo much to the right --------------------
             m_rotation.Y += 0.005f; // Slowly rotates the model on the Y axis
 
             Shader.Parameters["World"].SetValue(GetTransform()); // Sends model transform to shader

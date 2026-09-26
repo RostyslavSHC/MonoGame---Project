@@ -8,12 +8,15 @@ namespace Editor
 {
     public class GameEditor : Game // Creates the MonoGame editor
     {
-        private GraphicsDeviceManager m_graphics; // Manages the graphics device
-        private FormEditor m_parent; // Stores the main editor window
         private Camera m_camera; // Stores the camera
         private Models m_teapot; // Stores the 3D model
         private Effect m_myShader; // Stores the shader
         private Texture m_metalTexture; // Stores the texture
+
+
+        private GraphicsDeviceManager m_graphics; // Manages the graphics device
+        private FormEditor m_parent; // Stores the main editor window
+        private Level m_level; // Stores the level
 
         public GameEditor() // Runs when GameEditor is created
         {
@@ -36,7 +39,7 @@ namespace Editor
         // Runs when the game starts
         protected override void Initialize()
         {
-            m_camera = new Camera(new Vector3(0, 1, 1), m_graphics.GraphicsDevice.Viewport.AspectRatio); // Creates the camera and sets its position and aspect ratio
+            // m_camera = new Camera(new Vector3(0, 1, 1), m_graphics.GraphicsDevice.Viewport.AspectRatio); // Creates the camera and sets its position and aspect ratio
             RasterizerState state = new RasterizerState(); // Creates the rasterizer state
             state.CullMode = CullMode.None; // Disables culling
             GraphicsDevice.RasterizerState = state; // Sets the rasterizer state
@@ -47,11 +50,15 @@ namespace Editor
         // Used to load game files and assets
         protected override void LoadContent()
         {
+            m_level = new(); // Creates the level
+            m_level.LoadContent(Content); // Loads level's files and assets
+            /*
             m_myShader = Content.Load<Effect>("MyShader"); // Loads the shader
             m_metalTexture = Content.Load<Texture>("Metal"); // Loads the texture
 
             m_teapot = new Models(Content.Load<Model>("Teapot"), m_metalTexture, Vector3.Zero, 1); // Creates the 3D model
             m_teapot.SetShader(m_myShader); // Sets the shader
+            */
 
         }
 
@@ -66,7 +73,8 @@ namespace Editor
         {
             GraphicsDevice.Clear(Color.CornflowerBlue); // Clears the screen with a blue color
 
-            m_teapot.Render(m_camera.View, m_camera.Projection); // Draws the 3D model
+            // m_teapot.Render(m_camera.View, m_camera.Projection); // Draws the 3D model
+            m_level.Render(); // Draws the level
             base.Draw(gameTime); // Runs MonoGame's normal drawing
         }
     }
