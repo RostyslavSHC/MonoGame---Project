@@ -37,6 +37,10 @@ namespace Editor
         protected override void Initialize()
         {
             m_camera = new Camera(new Vector3(0, 1, 1), m_graphics.GraphicsDevice.Viewport.AspectRatio); // Creates the camera and sets its position and aspect ratio
+            RasterizerState state = new RasterizerState(); // Creates the rasterizer state
+            state.CullMode = CullMode.None; // Disables culling
+            GraphicsDevice.RasterizerState = state; // Sets the rasterizer state
+
             base.Initialize(); // Runs MonoGame's normal setup
         }
 
