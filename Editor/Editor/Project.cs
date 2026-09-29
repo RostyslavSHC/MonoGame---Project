@@ -1,18 +1,25 @@
-﻿using Editor;
+﻿using Editor.Engine;
+
+
 //using Editor.Engine;
+using Editor.Engine.Interfaces;
 using Microsoft.Xna.Framework.Content;
 using System.Collections.Generic;
 using System.IO;
 
 // Groups this code inside the GUI.Editor namespace
-namespace GUI.Editor
+namespace Editor.Editor
 {
-    internal class Project // Represents 1 editor project
+    internal class Project : ISerializable // Represents 1 editor project
     {
         public Level CurrentLevel { get; set; } = null; // Stores current active level
         public List<Level> Levels { get; set; } = new(); // Stores all levels in project
         public string Folder { get; set; } = string.Empty; // Stores project folder
         public string Name { get; set; } = string.Empty; // Stores project name
+
+        public Project() 
+        {
+        }
 
         // Creates a new project
         public Project(ContentManager _content, string _name)
@@ -39,5 +46,48 @@ namespace GUI.Editor
         {
             CurrentLevel.Render(); // Renders current level
         }
+
+
+
+
+
+        // Serialization
+        public void Serialize(BinaryWriter _stream)
+        {
+            _stream.Write(Levels.Count);
+            int clIndex = Levels.IndexOf(CurrentLevel);
+
+            foreach (var level in Levels)
+            {
+                level.Serialize(_stream);
+            }
+
+            _stream.Write(clIndex);
+            _stream.Write(Folder);
+            _stream.Write(Name);
+        }
+
+        // Deserialization
+        public void Deserialize(BinaryReader _stream, ContentManager _content)
+        {
+            int levelCount = _stream.ReadInt32();
+
+            for (int count = 0; count < levelCount; count++)
+            {
+                Level l = new();
+                l.Deserialize(_stream, _content);
+                Levels.Add(l);
+            }
+
+            int clIndex = _stream.ReadInt32();
+            CurrentLevel = Levels[clIndex];
+            Folder = _stream.ReadString();
+            Name = _stream.ReadString();
+        }
+
+
+
+
+
     }
 }

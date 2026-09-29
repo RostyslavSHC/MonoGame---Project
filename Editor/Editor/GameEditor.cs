@@ -1,4 +1,4 @@
-﻿using GUI.Editor;
+﻿using Editor.Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -6,7 +6,7 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 // Groups this code inside the Editor project
-namespace Editor
+namespace Editor.Editor
 {
     public class GameEditor : Game // Creates the MonoGame editor
     {

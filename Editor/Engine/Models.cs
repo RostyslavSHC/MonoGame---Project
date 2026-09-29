@@ -1,16 +1,19 @@
-﻿using System;
+﻿using Editor.Engine.Interfaces;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 // Groups this code inside the Editor project
-namespace Editor
+namespace Editor.Engine
 {
     // Represents and controls a 3D model
-    class Models
+    class Models : ISerializable
     {
         // Accessors
         public Model Mesh { get; set; } // Stores 3D model
@@ -26,13 +29,46 @@ namespace Editor
         private Vector3 m_position; // Stores position
         private Vector3 m_rotation; // Stores rotation
 
-        public Models(Model _model, Texture _texture, Vector3 _position, float _scale) // Receives 3D model, texture, starting position,  starting size
+        public Models()
         {
+        }
+
+        public Models(ContentManager _content,
+                      string _model,
+                      string _texture,
+                      string _effect,
+                      Vector3 _position,
+                      float _scale) // Receives 3D model, texture, starting position,  starting size
+        {
+            Create(_content, _model, _texture, _effect, _position, _scale);
+            /*
             Mesh = _model; // Saves the model
             Texture = _texture; // Saves the texture
             m_position = _position; // Saves the starting position
             Scale = _scale; // Saves the starting size
+            */
+
         }
+
+        public void Create(ContentManager _content,
+                           string _model,
+                           string _texture,
+                           string _effect,
+                           Vector3 _position,
+                           float _scale)
+        {
+            Mesh = _content.Load<Model>(_model);
+            Mesh.Tag = _model;
+            Texture = _content.Load<Texture>(_texture);
+            Texture.Tag = _texture;
+            Shader = _content.Load<Effect>(_effect);
+            Shader.Tag = _effect;
+            SetShader(Shader);
+            m_position = _position;
+            Scale = _scale;
+        }
+
+
 
         public void SetShader(Effect _effect) // Sets shader for model
         {
@@ -67,5 +103,36 @@ namespace Editor
                 mesh.Draw(); // Draws the mesh
             }
         }
+
+
+
+
+
+
+        public void Serialize(BinaryWriter _stream)
+        {
+            _stream.Write(Mesh.Tag.ToString());
+            _stream.Write(Texture.Tag.ToString());
+            _stream.Write(Shader.Tag.ToString());
+            HelpSerialize.Vec3(_stream, Position);
+            HelpSerialize.Vec3(_stream, Rotation);
+            _stream.Write(Scale);
+        }
+
+        public void Deserialize(BinaryReader _stream, ContentManager _content)
+        {
+            string mesh = _stream.ReadString();
+            string texture = _stream.ReadString();
+            string shader = _stream.ReadString();
+            Position = HelpDeserialize.Vec3(_stream);
+            Rotation = HelpDeserialize.Vec3(_stream);
+            Scale = _stream.ReadSingle();
+            Create(_content, mesh, texture, shader, Position, Scale);
+        }
+
+
+
+
+
     }
 }

@@ -88,12 +88,14 @@
             sToolStripMenuItem.Name = "sToolStripMenuItem";
             sToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             sToolStripMenuItem.Text = "Save";
+            sToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // loadToolStripMenuItem
             // 
             loadToolStripMenuItem.Name = "loadToolStripMenuItem";
             loadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             loadToolStripMenuItem.Text = "Load";
+            loadToolStripMenuItem.Click += loadToolStripMenuItem_Click;
             // 
             // statusStrip1
             // 

@@ -1,5 +1,5 @@
 ﻿using Editor;
-using GUI.Editor;
+using Editor.Editor;
 using System.Threading;
 
 // Set STA thread mode, for OpenFileDialog to work
