@@ -53,6 +53,8 @@ namespace Editor.Editor
 
 
 
+
+
         // Serialization
         public void Serialize(BinaryWriter _stream)
         {
