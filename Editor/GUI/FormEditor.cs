@@ -88,7 +88,6 @@ namespace Editor
         // Add Sun
         private void addSunToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Add Sun clicked");
             // If no project is created, don't try to add a sun into a level
             if (Game.Project == null)
             {
