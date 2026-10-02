@@ -57,9 +57,20 @@ namespace Editor.Engine
             foreach (var model in m_models)
             {
                 model.Serialize(_stream);
+
+                // NEW -----
+                int parentIndex = -1; // -1 means that the model has no parent
+
+                // If the model has a parent, find its index in the list and write it to the stream
+                if (model.Parent != null)
+                {
+                    parentIndex = m_models.IndexOf(model.Parent);
+                }
+                _stream.Write(parentIndex); // Write the parent index to the stream
             }
 
             m_camera.Serialize(_stream);
+
         }
 
         // Deserialization
@@ -67,11 +78,26 @@ namespace Editor.Engine
         {
             int modelCount = _stream.ReadInt32();
 
+            List<int> parentIndices = new List<int>(); // List to store parent indices
+
+            // 1. Load all models
             for (int count = 0; count < modelCount; count++)
             {
                 Models m = new();
                 m.Deserialize(_stream, _content);
                 m_models.Add(m);
+
+                // Read which model is it's parent
+                int parentIndex = _stream.ReadInt32();
+                parentIndices.Add(parentIndex); // Store the parent index for later
+            }
+            // NEW -----
+            for (int i = 0; i < modelCount; i++)
+            {
+                if (parentIndices[i] != -1) // If the model has a parent
+                {
+                    m_models[i].Parent = m_models[parentIndices[i]]; // Set the parent of the model
+                }
             }
 
             m_camera.Deserialize(_stream, _content);

@@ -150,6 +150,11 @@ namespace Editor.Engine
             HelpSerialize.Vec3(_stream, Position);
             HelpSerialize.Vec3(_stream, Rotation);
             _stream.Write(Scale);
+
+            // New to save movement and rotation speeds -----
+            _stream.Write(RotationSpeed);
+            _stream.Write(OrbitSpeed);
+            _stream.Write(m_orbitAngle);
         }
 
         public void Deserialize(BinaryReader _stream, ContentManager _content)
@@ -160,7 +165,14 @@ namespace Editor.Engine
             Position = HelpDeserialize.Vec3(_stream);
             Rotation = HelpDeserialize.Vec3(_stream);
             Scale = _stream.ReadSingle();
+
+            // New to load movement and rotation speeds -----
+            RotationSpeed = _stream.ReadSingle();
+            OrbitSpeed = _stream.ReadSingle();
+            m_orbitAngle = _stream.ReadSingle();
+
             Create(_content, mesh, texture, shader, Position, Scale);
+
         }
 
 
