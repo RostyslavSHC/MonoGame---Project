@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SharpDX.Direct2D1.Effects;
+using SharpDX.MediaFoundation;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,11 +18,18 @@ namespace Editor.Engine
     class Models : ISerializable
     {
         // Accessors
+        public string Name { get; set; } // NEW ----- 
         public Model Mesh { get; set; } // Stores 3D model
         public Effect Shader { get; set; } // Stores shader used to draw model
         public Vector3 Position { get => m_position; set { m_position = value; } } // Gets or changes the model position
         public Vector3 Rotation { get => m_rotation; set { m_rotation = value; } } // Gets or changes the model rotation
         public float Scale { get; set; } // Stores the model size
+
+        public float RotationSpeed { get; set; } = 0.005f; // NEW ----- Speed at which the model rotates
+        public float OrbitSpeed { get; set; } = 0.0f; // NEW ----- Speed at which the model orbits around a point
+        public Models Parent { get; set; } = null; // NEW ----- Parent model because Moon needs to know to which planet it belongs
+
+
 
         // Texturing
         public Texture Texture { get; set; } // Stores texture placed on model
@@ -29,6 +37,8 @@ namespace Editor.Engine
         // Members
         private Vector3 m_position; // Stores position
         private Vector3 m_rotation; // Stores rotation
+
+        private float m_orbitAngle = 0.0f; // NEW ----- Angle for orbiting around a point
 
         public Models()
         {
@@ -58,6 +68,7 @@ namespace Editor.Engine
                            Vector3 _position,
                            float _scale)
         {
+            Name = _model; // NEW -----
             Mesh = _content.Load<Model>(_model);
             Mesh.Tag = _model;
             Texture = _content.Load<Texture>(_texture);
@@ -92,8 +103,29 @@ namespace Editor.Engine
 
         public void Render(Matrix _view, Matrix _projection) // Receives camera view matrix and camera projection matrix
         {
+            m_rotation.Y += RotationSpeed; // NEW ----- Slowly rotates the model on the Y axis based on RotationSpeed
+
+            if (Parent != null) // If the model has a parent, it orbits around the parent
+            {
+                Vector3 offset = Vector3.Transform(new Vector3(20, 0, 0), Matrix.CreateRotationY(m_orbitAngle)); // Creates an offset for orbiting around the parent
+
+                m_position = Parent.Position + offset;
+                m_orbitAngle += OrbitSpeed; // Increases the orbit angle based on OrbitSpeed
+            }
+
+            // Otherwise, if the model doesn't have a parent, it rotates in place
             // m_position.X += 0.001f; // Slowly moves the model on the X axis. I commented it because othervise teapot is tooo much to the right --------------------
-            m_rotation.Y += 0.005f; // Slowly rotates the model on the Y axis
+            // m_rotation.Y += 0.005f; // Slowly rotates the model on the Y axis
+            
+            // Orbit around the centre of a Sun (0, 0, 0)
+            else if (OrbitSpeed != 0.0f)
+            {
+                m_position = Vector3.Transform(m_position, Matrix.CreateRotationY(OrbitSpeed)); // NEW ----- Slowly orbits the model around the Y axis based on OrbitSpeed
+            }
+
+
+
+
 
             Shader.Parameters["World"].SetValue(GetTransform()); // Sends model transform to shader
             Shader.Parameters["WorldViewProjection"].SetValue(GetTransform() * _view * _projection); // Sends all rendering matrices to shader

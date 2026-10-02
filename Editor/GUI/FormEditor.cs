@@ -83,5 +83,46 @@ namespace Editor
         }
 
 
+        // Menu options for adding Sun, Planet, Moon
+
+        // Add Sun
+        private void addSunToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // If no project is created, don't try to add a sun into a level
+            if (Game.Project == null)
+            {
+                return;
+            }
+
+            // Add Sun to the current level
+            Game.Project.CurrentLevel.AddSun(Game.Content);
+
+        }
+
+        // Add Planet
+        private void addPlanetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // If no project is created, don't try to add a planet into a level
+            if (Game.Project == null)
+            {
+                return;
+            }
+
+            // Add Planet to the current level
+            Game.Project.CurrentLevel.AddPlanet(Game.Content);
+
+        }
+
+        // Add Moon
+        private void addMoonToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Game.Project == null)
+            {
+                return;
+            }
+
+            Game.Project.CurrentLevel.AddMoon(Game.Content);
+
+        }
     }
 }

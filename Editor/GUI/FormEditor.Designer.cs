@@ -36,14 +36,14 @@
             createToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             sToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            statusStrip1 = new System.Windows.Forms.StatusStrip();
-            toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            splitContainer = new System.Windows.Forms.SplitContainer();
-            contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(components);
             controlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             addSunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             addPlanetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             addMoonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            statusStrip1 = new System.Windows.Forms.StatusStrip();
+            toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            splitContainer = new System.Windows.Forms.SplitContainer();
+            contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(components);
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
@@ -103,6 +103,34 @@
             loadToolStripMenuItem.Text = "Load";
             loadToolStripMenuItem.Click += loadToolStripMenuItem_Click;
             // 
+            // controlsToolStripMenuItem
+            // 
+            controlsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { addSunToolStripMenuItem, addPlanetToolStripMenuItem, addMoonToolStripMenuItem });
+            controlsToolStripMenuItem.Name = "controlsToolStripMenuItem";
+            controlsToolStripMenuItem.Size = new System.Drawing.Size(78, 24);
+            controlsToolStripMenuItem.Text = "Controls";
+            // 
+            // addSunToolStripMenuItem
+            // 
+            addSunToolStripMenuItem.Name = "addSunToolStripMenuItem";
+            addSunToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            addSunToolStripMenuItem.Text = "Add Sun";
+            addSunToolStripMenuItem.Click += addSunToolStripMenuItem_Click;
+            // 
+            // addPlanetToolStripMenuItem
+            // 
+            addPlanetToolStripMenuItem.Name = "addPlanetToolStripMenuItem";
+            addPlanetToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            addPlanetToolStripMenuItem.Text = "Add Planet";
+            addPlanetToolStripMenuItem.Click += addPlanetToolStripMenuItem_Click;
+            // 
+            // addMoonToolStripMenuItem
+            // 
+            addMoonToolStripMenuItem.Name = "addMoonToolStripMenuItem";
+            addMoonToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            addMoonToolStripMenuItem.Text = "Add Moon";
+            addMoonToolStripMenuItem.Click += addMoonToolStripMenuItem_Click;
+            // 
             // statusStrip1
             // 
             statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -141,31 +169,6 @@
             contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             contextMenuStrip1.Name = "contextMenuStrip1";
             contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
-            // 
-            // controlsToolStripMenuItem
-            // 
-            controlsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { addSunToolStripMenuItem, addPlanetToolStripMenuItem, addMoonToolStripMenuItem });
-            controlsToolStripMenuItem.Name = "controlsToolStripMenuItem";
-            controlsToolStripMenuItem.Size = new System.Drawing.Size(78, 24);
-            controlsToolStripMenuItem.Text = "Controls";
-            // 
-            // addSunToolStripMenuItem
-            // 
-            addSunToolStripMenuItem.Name = "addSunToolStripMenuItem";
-            addSunToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            addSunToolStripMenuItem.Text = "Add Sun";
-            // 
-            // addPlanetToolStripMenuItem
-            // 
-            addPlanetToolStripMenuItem.Name = "addPlanetToolStripMenuItem";
-            addPlanetToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            addPlanetToolStripMenuItem.Text = "Add Planet";
-            // 
-            // addMoonToolStripMenuItem
-            // 
-            addMoonToolStripMenuItem.Name = "addMoonToolStripMenuItem";
-            addMoonToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            addMoonToolStripMenuItem.Text = "Add Moon";
             // 
             // FormEditor
             // 
