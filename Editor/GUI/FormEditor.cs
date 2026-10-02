@@ -88,9 +88,11 @@ namespace Editor
         // Add Sun
         private void addSunToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            MessageBox.Show("Add Sun clicked");
             // If no project is created, don't try to add a sun into a level
             if (Game.Project == null)
             {
+                MessageBox.Show("Project is NULL");
                 return;
             }
 
@@ -105,6 +107,7 @@ namespace Editor
             // If no project is created, don't try to add a planet into a level
             if (Game.Project == null)
             {
+                MessageBox.Show("Project is NULL");
                 return;
             }
 
@@ -118,6 +121,7 @@ namespace Editor
         {
             if (Game.Project == null)
             {
+                MessageBox.Show("Project is NULL");
                 return;
             }
 
