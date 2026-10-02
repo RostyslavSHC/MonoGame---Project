@@ -16,7 +16,7 @@ namespace Editor.Engine
 
         // Members
         private List<Models> m_models = new(); // Stores all models in this level
-        private Camera m_camera = new(new Vector3(0, 1, 1), 16.0f / 9.0f); // Creates level camera (had to change Vector3(0, 2, 2) to Vector3(0, 1, 1) and 16/9 to 16.0f/9.0f) ------------------
+        private Camera m_camera = new(new Vector3(0, 0, 300), 16.0f / 9.0f); // Creates level camera (had to change Vector3(0, 2, 2) to Vector3(0, 1, 1) and 16/9 to 16.0f/9.0f) ------------------
 
 
 

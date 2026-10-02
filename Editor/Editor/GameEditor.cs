@@ -79,7 +79,7 @@ namespace Editor.Editor
         // Runs every frame to draw the game
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue); // Clears the screen with a blue color
+            GraphicsDevice.Clear(Color.Black); // Clears the screen with a blue color
 
             // m_teapot.Render(m_camera.View, m_camera.Projection); // Draws the 3D model
             // m_level.Render(); // Draws the level
