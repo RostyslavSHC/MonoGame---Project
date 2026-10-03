@@ -17,9 +17,8 @@ namespace Editor.Engine
 
         // Members
         private List<Models> m_models = new(); // Stores all models in this level
-        private Camera m_camera = new(new Vector3(0, 0, 300), 16.0f / 9.0f); // Creates level camera (had to change Vector3(0, 2, 2) to Vector3(0, 1, 1) and 16/9 to 16.0f/9.0f) ------------------
-        private Random m_random = new Random(); // NEW ----- Random number generator for level
-
+        private Camera m_camera = new(new Vector3(0, 0, 300), 16.0f / 9.0f); // Creates camera at position (0, 0, 300) and aspect ratio 16:9. Camera is 300 units away from the center of the level, looking at the center (x=0, y=0)
+        private Random m_random = new Random(); // NEW ----- Random number generator for planet positions, rotation speeds, and orbit speeds
 
         public Level() // Runs when level is created
         {
@@ -28,10 +27,6 @@ namespace Editor.Engine
         // This is where by default the game automatically creates models and add it to level. But now we will do it from menu so we create emoty screen
         public void LoadContent(ContentManager _content) // Loads level's files and assets
         {
-            //Models teapot = new(_content.Load<Model>("Teapot"), _content.Load<Texture>("Metal"), Vector3.Zero, 1.0f); // Creates teapot model
-            //teapot.SetShader(_content.Load<Effect>("MyShader")); // Gives teapot its shader
-            //Models teapot = new(_content, "Teapot", "Metal", "MyShader", Vector3.Zero, 1.0f);
-            //AddModel(teapot); // Adds teapot to the level
         }
 
         public void AddModel(Models _model) // Adds model to level
@@ -61,7 +56,7 @@ namespace Editor.Engine
                 // NEW -----
                 int parentIndex = -1; // -1 means that the model has no parent
 
-                // If the model has a parent, find its index in the list and write it to the stream
+                // If the model has a parent, find its index in the list and save that parent number
                 if (model.Parent != null)
                 {
                     parentIndex = m_models.IndexOf(model.Parent);
@@ -78,8 +73,9 @@ namespace Editor.Engine
         {
             int modelCount = _stream.ReadInt32();
 
-            List<int> parentIndices = new List<int>(); // List to store parent indices
+            List<int> parentIndices = new List<int>(); // NEW ----- List to store parent indices
 
+            // NEW
             // 1. Load all models
             for (int count = 0; count < modelCount; count++)
             {
@@ -91,7 +87,8 @@ namespace Editor.Engine
                 int parentIndex = _stream.ReadInt32();
                 parentIndices.Add(parentIndex); // Store the parent index for later
             }
-            // NEW -----
+
+            // 2. Set parents, after all models have been loaded
             for (int i = 0; i < modelCount; i++)
             {
                 if (parentIndices[i] != -1) // If the model has a parent
@@ -167,7 +164,7 @@ namespace Editor.Engine
         }
 
 
-        // MOON - Adding a moon to the level, but only if there are less than 10 moons already
+        // MOON - Adds one moon for every existing planet
         public void AddMoon(ContentManager content)
         {
             // List to store all existing planets in the level
@@ -189,9 +186,9 @@ namespace Editor.Engine
                 float rotationSpeed = RandomFloat(0.005f, 0.01f); // Random rotation speed for the moon
                 float orbitSpeed = RandomFloat(0.01f, 0.02f); // Random orbit speed for the moon
 
-                Models moon = new(content, "Moon", "MoonDiffuse", "MyShader", planet.Position + new Vector3(planet.Position.X + 20, planet.Position.Y, planet.Position.Z), scale);
-                moon.RotationSpeed = rotationSpeed;
-                moon.OrbitSpeed = orbitSpeed;
+                Models moon = new(content, "Moon", "MoonDiffuse", "MyShader", planet.Position + new Vector3(20, 0, 0), scale);
+                moon.RotationSpeed = rotationSpeed; // Set the rotation speed of the moon
+                moon.OrbitSpeed = orbitSpeed; // Set the orbit speed of the moon
                 moon.Parent = planet; // Set the parent of the moon to the planet
 
                 AddModel(moon); // Add the moon to the level

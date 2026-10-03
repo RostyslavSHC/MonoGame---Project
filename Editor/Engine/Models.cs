@@ -18,16 +18,17 @@ namespace Editor.Engine
     class Models : ISerializable
     {
         // Accessors
-        public string Name { get; set; } // NEW ----- 
         public Model Mesh { get; set; } // Stores 3D model
         public Effect Shader { get; set; } // Stores shader used to draw model
         public Vector3 Position { get => m_position; set { m_position = value; } } // Gets or changes the model position
         public Vector3 Rotation { get => m_rotation; set { m_rotation = value; } } // Gets or changes the model rotation
         public float Scale { get; set; } // Stores the model size
 
-        public float RotationSpeed { get; set; } = 0.005f; // NEW ----- Speed at which the model rotates
-        public float OrbitSpeed { get; set; } = 0.0f; // NEW ----- Speed at which the model orbits around a point
-        public Models Parent { get; set; } = null; // NEW ----- Parent model because Moon needs to know to which planet it belongs
+        // NEW 
+        public string Name { get; set; } // Stores 3D model name
+        public float RotationSpeed { get; set; } = 0.005f; // Speed at which the model rotates
+        public float OrbitSpeed { get; set; } = 0.0f; // Speed at which the model orbits around a point
+        public Models Parent { get; set; } = null; // Parent model because Moon needs to know to which planet it belongs
 
 
 
@@ -68,7 +69,7 @@ namespace Editor.Engine
                            Vector3 _position,
                            float _scale)
         {
-            Name = _model; // NEW -----
+            Name = _model; // NEW ----- Saves the model name
             Mesh = _content.Load<Model>(_model);
             Mesh.Tag = _model;
             Texture = _content.Load<Texture>(_texture);
@@ -103,24 +104,22 @@ namespace Editor.Engine
 
         public void Render(Matrix _view, Matrix _projection) // Receives camera view matrix and camera projection matrix
         {
+            // NEW
             m_rotation.Y += RotationSpeed; // NEW ----- Slowly rotates the model on the Y axis based on RotationSpeed
 
             if (Parent != null) // If the model has a parent, it orbits around the parent
             {
-                Vector3 offset = Vector3.Transform(new Vector3(20, 0, 0), Matrix.CreateRotationY(m_orbitAngle)); // Creates an offset for orbiting around the parent
+                // Creates an offset for orbiting around the parent
+                Vector3 offset = Vector3.Transform(new Vector3(20, 0, 0), Matrix.CreateRotationY(m_orbitAngle));
 
-                m_position = Parent.Position + offset;
+                m_position = Parent.Position + offset; // Sets the model position to be the parent position plus the offset
                 m_orbitAngle += OrbitSpeed; // Increases the orbit angle based on OrbitSpeed
             }
-
-            // Otherwise, if the model doesn't have a parent, it rotates in place
-            // m_position.X += 0.001f; // Slowly moves the model on the X axis. I commented it because othervise teapot is tooo much to the right --------------------
-            // m_rotation.Y += 0.005f; // Slowly rotates the model on the Y axis
             
-            // Orbit around the centre of a Sun (0, 0, 0)
+            // Orbit around the centre of a Sun (0, 0, 0). If there is no parent, the model orbits around the centre of the level
             else if (OrbitSpeed != 0.0f)
             {
-                m_position = Vector3.Transform(m_position, Matrix.CreateRotationY(OrbitSpeed)); // NEW ----- Slowly orbits the model around the Y axis based on OrbitSpeed
+                m_position = Vector3.Transform(m_position, Matrix.CreateRotationY(OrbitSpeed)); // Slowly orbits the model around the Y axis based on OrbitSpeed
             }
 
 
@@ -141,7 +140,7 @@ namespace Editor.Engine
 
 
 
-
+        // Serialization - Saves the model
         public void Serialize(BinaryWriter _stream)
         {
             _stream.Write(Mesh.Tag.ToString());
@@ -151,12 +150,13 @@ namespace Editor.Engine
             HelpSerialize.Vec3(_stream, Rotation);
             _stream.Write(Scale);
 
-            // New to save movement and rotation speeds -----
-            _stream.Write(RotationSpeed);
-            _stream.Write(OrbitSpeed);
-            _stream.Write(m_orbitAngle);
+            // NEW ----- Save movement and rotation speeds
+            _stream.Write(RotationSpeed); // Save rotation speed
+            _stream.Write(OrbitSpeed); // Save orbit speed
+            _stream.Write(m_orbitAngle); // Save orbit angle
         }
 
+        // Deserialization - Loads the model
         public void Deserialize(BinaryReader _stream, ContentManager _content)
         {
             string mesh = _stream.ReadString();
@@ -166,10 +166,10 @@ namespace Editor.Engine
             Rotation = HelpDeserialize.Vec3(_stream);
             Scale = _stream.ReadSingle();
 
-            // New to load movement and rotation speeds -----
-            RotationSpeed = _stream.ReadSingle();
-            OrbitSpeed = _stream.ReadSingle();
-            m_orbitAngle = _stream.ReadSingle();
+            // NEW ----- Load movement and rotation speeds
+            RotationSpeed = _stream.ReadSingle(); // Load rotation speed
+            OrbitSpeed = _stream.ReadSingle(); // Load orbit speed
+            m_orbitAngle = _stream.ReadSingle(); // Load orbit angle
 
             Create(_content, mesh, texture, shader, Position, Scale);
 

@@ -83,6 +83,14 @@ namespace Editor
         }
 
 
+
+
+
+
+
+
+
+
         // Menu options for adding Sun, Planet, Moon
 
         // Add Sun
@@ -95,9 +103,7 @@ namespace Editor
                 return;
             }
 
-            // Add Sun to the current level
-            Game.Project.CurrentLevel.AddSun(Game.Content);
-
+            Game.Project.CurrentLevel.AddSun(Game.Content); // Add Sun to the current level
         }
 
         // Add Planet
@@ -110,22 +116,26 @@ namespace Editor
                 return;
             }
 
-            // Add Planet to the current level
-            Game.Project.CurrentLevel.AddPlanet(Game.Content);
-
+            Game.Project.CurrentLevel.AddPlanet(Game.Content); // Add Planet to the current level
         }
 
         // Add Moon
         private void addMoonToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // If no project is created, don't try to add a moon into a level
             if (Game.Project == null)
             {
                 MessageBox.Show("Project is NULL");
                 return;
             }
 
-            Game.Project.CurrentLevel.AddMoon(Game.Content);
-
+            Game.Project.CurrentLevel.AddMoon(Game.Content); // Add Moon to the current level
         }
+
+
+
+
+
+
     }
 }
