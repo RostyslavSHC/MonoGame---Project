@@ -1,11 +1,13 @@
 ﻿using Editor.Engine.Interfaces;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX.MediaFoundation;
+using System;
+using System.Collections.Generic;
 using System.Collections.Generic;
 using System.IO;
-using System;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 // Groups this code inside the Editor project
 namespace Editor.Engine
@@ -91,9 +93,18 @@ namespace Editor.Engine
             // 2. Set parents, after all models have been loaded
             for (int i = 0; i < modelCount; i++)
             {
-                if (parentIndices[i] != -1) // If the model has a parent
+                if (parentIndices[i] != -1) // Check if the model has a parent
                 {
-                    m_models[i].Parent = m_models[parentIndices[i]]; // Set the parent of the model
+                    m_models[i].Parent = m_models[parentIndices[i]]; // Reconnect the Moon to the correct Planet
+                    // Example:
+                    // Before saving: Moon belongs to Planet #1
+                    // So we save: Moon's parent number = 1
+                    // When loading, we first create: #0 Sun, then #1 Planet, then #2 Moon
+                        // m_models[i] - Model we are currently looking at. Example: if i = 2 : m_models[2]
+                        // parentIndices[i] - Saved parent numer for that model. Example: parentIndices[2] = 1 : Model #2 has parent #1
+                        // m_models[parentIndices[i]] - becomes m_models[1], which is the Planet that the Moon belongs to
+                        // To sum up: Moon.Parent = Planet : Means that the Moon is now connected to the correct Planet, and will move with it when the Planet moves
+
                 }
             }
 
