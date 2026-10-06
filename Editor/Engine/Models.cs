@@ -18,50 +18,41 @@ namespace Editor.Engine
     class Models : ISerializable
     {
         // Accessors
-        public Model Mesh { get; set; } // Stores 3D model
-        public Effect Shader { get; set; } // Stores shader used to draw model
+        public Model Mesh { get; set; }
+        public Effect Shader { get; set; }
         public Vector3 Position { get => m_position; set { m_position = value; } } // Gets or changes the model position
         public Vector3 Rotation { get => m_rotation; set { m_rotation = value; } } // Gets or changes the model rotation
-        public float Scale { get; set; } // Stores the model size
+        public float Scale { get; set; }
 
-        // NEW 
-        public string Name { get; set; } // Stores 3D model name
-        public float RotationSpeed { get; set; } = 0.005f; // Speed at which the model rotates
-        public float OrbitSpeed { get; set; } = 0.0f; // Speed at which the model orbits around a point
+        public string Name { get; set; }
+        public float RotationSpeed { get; set; } = 0.005f;
+        public float OrbitSpeed { get; set; } = 0.0f;
         public Models Parent { get; set; } = null; // Parent model because Moon needs to know to which planet it belongs
 
-
-
         // Texturing
-        public Texture Texture { get; set; } // Stores texture placed on model
+        public Texture Texture { get; set; }
 
         // Members
-        private Vector3 m_position; // Stores position
-        private Vector3 m_rotation; // Stores rotation
-
-        private float m_orbitAngle = 0.0f; // NEW ----- Angle for orbiting around a point
+        private Vector3 m_position;
+        private Vector3 m_rotation;
+        private float m_orbitAngle = 0.0f;
 
         public Models()
         {
         }
 
+        // Parameterized constructor
         public Models(ContentManager _content,
                       string _model,
                       string _texture,
                       string _effect,
                       Vector3 _position,
-                      float _scale) // Receives 3D model, texture, starting position,  starting size
+                      float _scale)
         {
-            Create(_content, _model, _texture, _effect, _position, _scale);
-            /*
-            Mesh = _model; // Saves the model
-            Texture = _texture; // Saves the texture
-            m_position = _position; // Saves the starting position
-            Scale = _scale; // Saves the starting size
-            */
-
+            Create(_content, _model, _texture, _effect, _position, _scale); // Creates the model
         }
 
+        // Creates the model
         public void Create(ContentManager _content,
                            string _model,
                            string _texture,
@@ -69,7 +60,7 @@ namespace Editor.Engine
                            Vector3 _position,
                            float _scale)
         {
-            Name = _model; // NEW ----- Saves the model name
+            Name = _model;
             Mesh = _content.Load<Model>(_model);
             Mesh.Tag = _model;
             Texture = _content.Load<Texture>(_texture);
@@ -82,11 +73,11 @@ namespace Editor.Engine
         }
 
 
-
-        public void SetShader(Effect _effect) // Sets shader for model
+        // Sets the shader for the model
+        public void SetShader(Effect _effect)
         {
             Shader = _effect; // Saves shader
-            foreach (ModelMesh mesh in Mesh.Meshes) // Goes through every mesh in model
+            foreach (ModelMesh mesh in Mesh.Meshes) // Loops through every mesh
             {
                 foreach (ModelMeshPart meshPart in mesh.MeshParts) // Loops through every mesh part
                 {
@@ -95,25 +86,25 @@ namespace Editor.Engine
             }
         }
 
-        public Matrix GetTransform() // Creates model's transformation matrix
+        // Creates model's transformation matrix (position, rotation, scale)
+        public Matrix GetTransform()
         {
-            return Matrix.CreateScale(Scale) * // Applies model size
-                   Matrix.CreateFromYawPitchRoll(Rotation.Y, Rotation.X, Rotation.Z) * // Applies rotation
-                   Matrix.CreateTranslation(Position); // Applies position
+            return Matrix.CreateScale(Scale) *
+                   Matrix.CreateFromYawPitchRoll(Rotation.Y, Rotation.X, Rotation.Z) *
+                   Matrix.CreateTranslation(Position);
         }
 
-        public void Render(Matrix _view, Matrix _projection) // Receives camera view matrix and camera projection matrix
+        // Receives camera view matrix and camera projection matrix
+        public void Render(Matrix _view, Matrix _projection)
         {
-            // NEW
-            m_rotation.Y += RotationSpeed; // NEW ----- Slowly rotates the model on the Y axis based on RotationSpeed
+            m_rotation.Y += RotationSpeed;
 
             if (Parent != null) // If the model has a parent, it orbits around the parent
             {
-                // Creates an offset for orbiting around the parent
-                Vector3 offset = Vector3.Transform(new Vector3(20, 0, 0), Matrix.CreateRotationY(m_orbitAngle));
+                Vector3 offset = Vector3.Transform(new Vector3(20, 0, 0), Matrix.CreateRotationY(m_orbitAngle)); // Creates an offset based on the orbit angle
 
-                m_position = Parent.Position + offset; // Sets the model position to be the parent position plus the offset
-                m_orbitAngle += OrbitSpeed; // Increases the orbit angle based on OrbitSpeed
+                m_position = Parent.Position + offset;
+                m_orbitAngle += OrbitSpeed;
             }
             
             // Orbit around the centre of a Sun (0, 0, 0). If there is no parent, the model orbits around the centre of the level
@@ -122,17 +113,14 @@ namespace Editor.Engine
                 m_position = Vector3.Transform(m_position, Matrix.CreateRotationY(OrbitSpeed)); // Slowly orbits the model around the Y axis based on OrbitSpeed
             }
 
+            // Sends the model's data to the shader
+            Shader.Parameters["World"].SetValue(GetTransform());
+            Shader.Parameters["WorldViewProjection"].SetValue(GetTransform() * _view * _projection);
+            Shader.Parameters["Texture"].SetValue(Texture);
 
-
-
-
-            Shader.Parameters["World"].SetValue(GetTransform()); // Sends model transform to shader
-            Shader.Parameters["WorldViewProjection"].SetValue(GetTransform() * _view * _projection); // Sends all rendering matrices to shader
-            Shader.Parameters["Texture"].SetValue(Texture); // Sends texture to shader
-
-            foreach (ModelMesh mesh in Mesh.Meshes) // Loop through every mesh
+            foreach (ModelMesh mesh in Mesh.Meshes)
             {
-                mesh.Draw(); // Draws the mesh
+                mesh.Draw();
             }
         }
 
@@ -150,10 +138,10 @@ namespace Editor.Engine
             HelpSerialize.Vec3(_stream, Rotation);
             _stream.Write(Scale);
 
-            // NEW ----- Save movement and rotation speeds
-            _stream.Write(RotationSpeed); // Save rotation speed
-            _stream.Write(OrbitSpeed); // Save orbit speed
-            _stream.Write(m_orbitAngle); // Save orbit angle
+            // Save movement and rotation speeds
+            _stream.Write(RotationSpeed);
+            _stream.Write(OrbitSpeed);
+            _stream.Write(m_orbitAngle);
         }
 
         // Deserialization - Loads the model
@@ -166,12 +154,12 @@ namespace Editor.Engine
             Rotation = HelpDeserialize.Vec3(_stream);
             Scale = _stream.ReadSingle();
 
-            // NEW ----- Load movement and rotation speeds
-            RotationSpeed = _stream.ReadSingle(); // Load rotation speed
-            OrbitSpeed = _stream.ReadSingle(); // Load orbit speed
-            m_orbitAngle = _stream.ReadSingle(); // Load orbit angle
+            // Load movement and rotation speeds
+            RotationSpeed = _stream.ReadSingle();
+            OrbitSpeed = _stream.ReadSingle();
+            m_orbitAngle = _stream.ReadSingle();
 
-            Create(_content, mesh, texture, shader, Position, Scale);
+            Create(_content, mesh, texture, shader, Position, Scale); // Creates the model
 
         }
 
