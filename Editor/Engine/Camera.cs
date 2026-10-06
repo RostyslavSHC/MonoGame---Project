@@ -45,6 +45,7 @@ namespace Editor.Engine
 
 
 
+
         public void Serialize(BinaryWriter _stream) // Serializes the camera
         {
             HelpSerialize.Vec3(_stream, Position);
