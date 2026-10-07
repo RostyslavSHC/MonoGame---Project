@@ -18,6 +18,7 @@ namespace Editor
 {
     public partial class FormEditor : Form // Creates editor window
     {
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public GameEditor Game { get; set; } // Stores the MonoGame editor
 
 
