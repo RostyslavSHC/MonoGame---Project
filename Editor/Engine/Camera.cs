@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Editor.Engine.Interfaces;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 
 // Groups this code inside the Editor project
@@ -21,6 +22,7 @@ namespace Editor.Engine
         public float NearPlane { get; set; } = 0.1f; // Closest visible distance
         public float FarPlane { get; set; } = 1000f; // Farthest visible distance
         public float AspectRatio { get; set; } = 16.0f / 9.0f;
+        public Viewport Viewport { get; set; }
 
         public Camera()
         {

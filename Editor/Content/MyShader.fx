@@ -9,12 +9,13 @@
 
 
 // matrix WorldViewProjection;
+matrix WorldViewProjection; // Extra for this project
+
+
 matrix World; // Extra for this project
 matrix View;
 matrix Projection;
-
 bool Tint;
-matrix WorldViewProjection; // Extra for this project
 
 // Texture
 texture Texture;
@@ -62,7 +63,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float3 output = tex2D(BasicTextureSampler, input.UV);
-
+    if (Tint) output.r = 1;
     return float4(output, 1);
 }
 

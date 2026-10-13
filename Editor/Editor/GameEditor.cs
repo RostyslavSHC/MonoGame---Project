@@ -118,6 +118,7 @@ namespace Editor.Editor
         {
             if (Project == null) return; // If the project is not loaded, do nothing
             Camera c = Project.CurrentLevel.GetCamera(); // Gets the camera
+            c.Viewport = m_graphics.GraphicsDevice.Viewport; // Sets the viewport
             c.Update(c.Position, m_graphics.GraphicsDevice.Viewport.AspectRatio); // Updates the camera
         }
     }

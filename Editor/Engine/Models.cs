@@ -22,6 +22,7 @@ namespace Editor.Engine
         public Vector3 Position { get => m_position; set { m_position = value; } } // Gets or changes the model position
         public Vector3 Rotation { get => m_rotation; set { m_rotation = value; } } // Gets or changes the model rotation
         public float Scale { get; set; } // Stores the model size
+        public bool Selected { get; set; } = false;
 
         // Texturing
         public Texture Texture { get; set; } // Stores texture placed on model
@@ -93,11 +94,13 @@ namespace Editor.Engine
         public void Render(Matrix _view, Matrix _projection) // Receives camera view matrix and camera projection matrix
         {
             // m_position.X += 0.001f; // Slowly moves the model on the X axis. I commented it because othervise teapot is tooo much to the right --------------------
-            m_rotation.Y += 0.005f; // Slowly rotates the model on the Y axis
+            // m_rotation.Y += 0.005f; // Slowly rotates the model on the Y axis
 
             Shader.Parameters["World"].SetValue(GetTransform()); // Sends model transform to shader
             Shader.Parameters["WorldViewProjection"].SetValue(GetTransform() * _view * _projection); // Sends all rendering matrices to shader
             Shader.Parameters["Texture"].SetValue(Texture); // Sends texture to shader
+            Shader.Parameters["Tint"].SetValue(Selected);
+
 
             foreach (ModelMesh mesh in Mesh.Meshes) // Loop through every mesh
             {

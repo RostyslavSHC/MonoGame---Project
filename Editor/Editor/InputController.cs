@@ -93,6 +93,23 @@ namespace Editor.Engine
         }
 
 
+        public Ray GetPickRay(Camera _camera)
+        {
+            // Create two points using the mouse position
+            Vector3 nearPoint = new Vector3(MousePosition, 0);
+            Vector3 farPoint = new Vector3(MousePosition, 1);
+
+            // Convert screen coordinates into 3D world coordinates
+            nearPoint = _camera.Viewport.Unproject(nearPoint, _camera.Projection, _camera.View, Matrix.Identity);
+            farPoint = _camera.Viewport.Unproject(farPoint, _camera.Projection, _camera.View, Matrix.Identity);
+
+            // Find the direction from the near point to the far point
+            Vector3 direction = farPoint - nearPoint;
+            direction.Normalize(); // Make direction length equal to 1
+
+            return new Ray(nearPoint, direction); // Create and return the picking ray
+        }
+
 
 
 

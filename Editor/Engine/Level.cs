@@ -55,7 +55,7 @@ namespace Editor.Engine
 
 
 
-        public void Update(float _delta)
+        public void HandleTranslate(float _delta)
         {
             InputController ic = InputController.Instance; // Gets keyboard and mouse input
             Vector3 translate = Vector3.Zero; // Stores camera movement
@@ -90,6 +90,10 @@ namespace Editor.Engine
             {
                 m_camera.Translate(translate * 0.001f); // Apply camera movement
             }
+        }
+        private void HandleRotate(float _delta)
+        {
+            InputController ic = InputController.Instance;
 
             if (ic.IsButtonDown(MouseButtons.Right)) // Check if right mouse button is pressed
             {
@@ -106,6 +110,39 @@ namespace Editor.Engine
 
 
 
+        private void HandlePick()
+        {
+            InputController ic = InputController.Instance; // Get input controller
+
+            if (ic.IsButtonDown(MouseButtons.Left)) // Check if left mouse button is pressed
+            {
+                Ray r = ic.GetPickRay(m_camera); // Create a ray from the mouse position
+
+                foreach (Models model in m_models) // Check every model in the level
+                {
+                    model.Selected = false; // First unselect the model
+
+                    foreach (ModelMesh mesh in model.Mesh.Meshes) // Check every mesh in the model
+                    {
+                        BoundingSphere s = mesh.BoundingSphere; // Get mesh bounding sphere
+                        s = s.Transform(model.GetTransform()); // Move sphere to model's world position
+
+                        float? f = r.Intersects(s); // Check if the ray hits the sphere
+                        if (f.HasValue) // If hit happened
+                        {
+                            model.Selected = true; // Mark this model as selected
+                        }
+                    }
+                }
+            }
+        }
+
+        public void Update(float _delta)
+        {
+            HandleTranslate(_delta); // Handle moving the camera
+            HandleRotate(_delta); // Handle rotating the camera
+            HandlePick(); // Handle selecting objects with the mouse
+        }
 
 
 
