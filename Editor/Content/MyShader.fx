@@ -10,6 +10,10 @@
 
 // matrix WorldViewProjection;
 matrix World; // Extra for this project
+matrix View;
+matrix Projection;
+
+bool Tint;
 matrix WorldViewProjection; // Extra for this project
 
 // Texture
@@ -20,6 +24,11 @@ texture Texture;
 sampler BasicTextureSampler = sampler_state
 {
     texture = <Texture>;
+    MinFilter = Anisotropic; // Minification Filter
+    MagFilter = Linear; // Magnification Filter
+    MipFilter = Linear; // Mip-mapping
+    AddressU = Wrap; // Address Mode for U Coordinates
+    AddressV = Wrap; // Address Mode for V Coordinates};
 };
 
 

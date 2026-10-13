@@ -1,4 +1,5 @@
-﻿using Editor.Engine;
+﻿using Editor.Editor;
+using Editor.Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -20,6 +21,10 @@ namespace Editor.Editor
 
         private GraphicsDeviceManager m_graphics; // Manages the graphics device
         private FormEditor m_parent; // Stores the main editor window
+
+        private SpriteBatch m_spriteBatch; // Draws 2D elements
+        private FontController m_fonts; // Handles fonts
+
         // private Level m_level; // Stores the level
 
         public GameEditor() // Runs when GameEditor is created
@@ -44,9 +49,9 @@ namespace Editor.Editor
         protected override void Initialize()
         {
             // m_camera = new Camera(new Vector3(0, 1, 1), m_graphics.GraphicsDevice.Viewport.AspectRatio); // Creates the camera and sets its position and aspect ratio
-            RasterizerState state = new RasterizerState(); // Creates the rasterizer state
-            state.CullMode = CullMode.None; // Disables culling
-            GraphicsDevice.RasterizerState = state; // Sets the rasterizer state
+            // RasterizerState state = new RasterizerState(); // Creates the rasterizer state
+            // state.CullMode = CullMode.None; // Disables culling
+            // GraphicsDevice.RasterizerState = state; // Sets the rasterizer state
 
             base.Initialize(); // Runs MonoGame's normal setup
         }
@@ -68,6 +73,9 @@ namespace Editor.Editor
             m_teapot.SetShader(m_myShader); // Sets the shader
             */
 
+            m_spriteBatch = new(GraphicsDevice); // Creates the sprite batch
+            m_fonts = new(); // Creates the font controller
+            m_fonts.LoadContent(Content); // Loads the fonts
         }
 
         // Runs every frame to update the game
@@ -79,13 +87,23 @@ namespace Editor.Editor
         // Runs every frame to draw the game
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue); // Clears the screen with a blue color
+            // Clear the screen with a blue background
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // m_teapot.Render(m_camera.View, m_camera.Projection); // Draws the 3D model
-            // m_level.Render(); // Draws the level
+            if (Project != null)
+            {
+                // Allow both sides of the 3D models to be visible
+                RasterizerState state = new RasterizerState();
+                state.CullMode = CullMode.None;
+                GraphicsDevice.RasterizerState = state;
 
-            if (Project != null) Project.Render(); // Draws the project
-            base.Draw(gameTime); // Runs MonoGame's normal drawing
+                Project.Render(); // Draw the project
+                m_spriteBatch.Begin(); // Start drawing text
+                m_fonts.Draw(m_spriteBatch, 20, InputController.Instance.ToString(), new Vector2(20, 20), Color.White); // Show currently pressed keyboard keys and mouse buttons
+                m_spriteBatch.End(); // Finish drawing text
+            }
+
+            base.Draw(gameTime);
         }
 
         // Adjusts the aspect ratio of the camera
