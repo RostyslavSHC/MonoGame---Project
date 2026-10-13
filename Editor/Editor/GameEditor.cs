@@ -80,16 +80,32 @@ namespace Editor.Editor
         }
 
         // Runs every frame to update the game
+
         protected override void Update(GameTime gameTime)
         {
-            if (Project != null)
+            if (Project != null) // Check if a project exists
             {
-                Project.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000); // Updates the project
-                InputController.Instance.Clear();
+                Project.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000); // Update the project using time between frames
+                InputController.Instance.Clear(); // Reset mouse input for the next frame
+                var models = Project.CurrentLevel.GetSelectedModels(); // Get all selected models
+
+                if (models.Count == 0) // No models selected
+                {
+                    m_parent.propertyGrid.SelectedObject = null; // Clear property grid
+                }
+                else if (models.Count > 1) // Multiple models selected
+                {
+                    m_parent.propertyGrid.SelectedObjects = models.ToArray(); // Show multiple models
+                }
+                else // One model selected
+                {
+                    m_parent.propertyGrid.SelectedObject = models[0]; // Show selected model
+                }
             }
 
-            base.Update(gameTime); // Runs MonoGame's normal update
+            base.Update(gameTime); // Run normal game update
         }
+
 
         // Runs every frame to draw the game
         protected override void Draw(GameTime gameTime)

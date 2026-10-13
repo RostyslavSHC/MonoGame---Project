@@ -40,6 +40,26 @@ namespace Editor.Engine
             m_models.Add(_model); // Stores model in list
         }
 
+
+        public List<Models> GetSelectedModels()
+        {
+            List<Models> models = new List<Models>(); // Create an empty list
+
+            foreach (var model in m_models) // Go through all models
+            {
+                if (model.Selected) models.Add(model); // Add selected models to the list
+            }
+
+            return models; // Return all selected models
+        }
+
+
+
+
+
+
+
+
         public void Render() // Draws level
         {
             foreach (Models m in m_models) // Goes through every model
