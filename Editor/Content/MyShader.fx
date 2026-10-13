@@ -28,7 +28,7 @@ sampler BasicTextureSampler = sampler_state
     MagFilter = Linear; // Magnification Filter
     MipFilter = Linear; // Mip-mapping
     AddressU = Wrap; // Address Mode for U Coordinates
-    AddressV = Wrap; // Address Mode for V Coordinates};
+    AddressV = Wrap; // Address Mode for V Coordinates
 };
 
 
