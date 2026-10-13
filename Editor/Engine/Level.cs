@@ -77,8 +77,8 @@ namespace Editor.Engine
             if (ic.IsButtonDown(MouseButtons.Middle)) // Check if middle mouse button is pressed
             {
                 Vector2 dir = ic.MousePosition - ic.LastPosition; // Calculate mouse movement
-                translate.X -= dir.X; // Move camera horizontally
-                translate.Y = dir.Y; // Move camera vertically
+                translate.X = dir.X; // Move camera horizontally
+                translate.Y = -dir.Y; // Move camera vertically
             }
 
             if (ic.GetWheel() != 0) // Check if mouse wheel was scrolled
@@ -86,23 +86,86 @@ namespace Editor.Engine
                 translate.Z = ic.GetWheel() * 2; // Zoom using mouse wheel
             }
 
-            if (translate != Vector3.Zero) // Only move camera if there is input
+
+            if (translate != Vector3.Zero) // Check if there is movement
             {
-                m_camera.Translate(translate * 0.001f); // Apply camera movement
+                bool modelTranslated = false; // Track if any model was moved
+
+                foreach (Models model in m_models) // Go through all models
+                {
+                    if (model.Selected) // Check if the model is selected
+                    {
+                        modelTranslated = true; // Mark that a model was moved
+                        model.Translate(translate / 1000, m_camera); // Move the selected model
+                    }
+                }
+
+                if (!modelTranslated) // If no model was moved
+                {
+                    m_camera.Translate(translate * 0.001f); // Move the camera instead
+                }
             }
+
         }
+
+
+
+
+
+
         private void HandleRotate(float _delta)
         {
-            InputController ic = InputController.Instance;
+            InputController ic = InputController.Instance; // Get input controller
 
-            if (ic.IsButtonDown(MouseButtons.Right)) // Check if right mouse button is pressed
+            // Check if right mouse button is pressed without Alt
+            if ((ic.IsButtonDown(MouseButtons.Right)) && (!ic.IsKeyDown(Keys.Menu)))
             {
-                Vector2 dir = ic.MousePosition - ic.LastPosition; // Calculate mouse movement
+                Vector2 dir = ic.MousePosition - ic.LastPosition; // Get mouse movement
 
-                if (dir != Vector2.Zero) // Only rotate if mouse moved
+                if (dir != Vector2.Zero) // Check if mouse moved
                 {
                     Vector3 movement = new Vector3(dir.Y, dir.X, 0) * _delta; // Calculate rotation
-                    m_camera.Rotate(movement); // Rotate camera
+                    bool modelRotated = false; // Track if a model was rotated
+
+                    foreach (Models model in m_models) // Go through all models
+                    {
+                        if (model.Selected) // Check if model is selected
+                        {
+                            modelRotated = true; // Mark that a model was rotated
+                            model.Rotation += movement; // Rotate selected model
+                        }
+                    }
+
+                    if (!modelRotated) // If no model is selected
+                    {
+                        m_camera.Rotate(movement); // Rotate camera instead
+                    }
+                }
+            }
+        }
+
+
+        private void HandleScale(float _delta)
+        {
+            InputController ic = InputController.Instance; // Get input controller
+
+            // Check if right mouse button and Alt are pressed
+            if ((ic.IsButtonDown(MouseButtons.Right)) &&
+                (ic.IsKeyDown(Keys.Menu)))
+            {
+                float l = ic.MousePosition.X - ic.LastPosition.X; // Get horizontal mouse movement
+
+                if (l != 0) // Check if mouse moved
+                {
+                    l *= _delta; // Adjust scaling using time between frames
+
+                    foreach (Models model in m_models) // Go through all models
+                    {
+                        if (model.Selected) // Check if model is selected
+                        {
+                            model.Scale += l; // Increase or decrease model size
+                        }
+                    }
                 }
             }
         }
@@ -141,6 +204,7 @@ namespace Editor.Engine
         {
             HandleTranslate(_delta); // Handle moving the camera
             HandleRotate(_delta); // Handle rotating the camera
+            HandleScale(_delta); // Handle scaling the camera
             HandlePick(); // Handle selecting objects with the mouse
         }
 
@@ -191,10 +255,24 @@ namespace Editor.Engine
             m_camera.Deserialize(_stream, _content);
         }
 
+
         public override string ToString()
         {
-            return m_camera.ToString();
+            string s = string.Empty; // Start with empty text
+
+            foreach (Models m in m_models) // Go through all models
+            {
+                if (m.Selected) // Check if the model is selected
+                {
+                    // Add selected model's position and rotation to the text
+                    s += "\nModel: Pos: " + m.Position.ToString() +
+                         "  Rot: " + m.Rotation.ToString();
+                }
+            }
+
+            return m_camera.ToString() + s; // Show camera position and selected model information
         }
+
 
 
 

@@ -84,6 +84,43 @@ namespace Editor.Engine
             }
         }
 
+
+
+
+
+
+        public void Translate(Vector3 _translate, Camera _camera)
+        {
+            // Calculate distance between camera and target
+            float distance = Vector3.Distance(_camera.Target, _camera.Position);
+
+            // Get the direction the camera is facing
+            Vector3 forward = _camera.Target - _camera.Position;
+            forward.Normalize();
+
+            // Find the left direction
+            Vector3 left = Vector3.Cross(forward, Vector3.Up);
+            left.Normalize();
+
+            // Find the up direction
+            Vector3 up = Vector3.Cross(left, forward);
+            up.Normalize();
+
+            Position += left * _translate.X * distance; // Move model left or right
+            Position += up * _translate.Y * distance; // Move model up or down
+            Position += forward * _translate.Z * 100f; // Move model forward or backward
+        }
+
+        public void Rotate(Vector3 _rotate)
+        {
+            Rotation += _rotate; // Add rotation to the model
+        }
+
+
+
+
+
+
         public Matrix GetTransform() // Creates model's transformation matrix
         {
             return Matrix.CreateScale(Scale) * // Applies model size
