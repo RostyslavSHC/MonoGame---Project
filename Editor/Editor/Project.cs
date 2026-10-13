@@ -41,6 +41,11 @@ namespace Editor.Editor
             CurrentLevel.LoadContent(_content); // Loads level content
             Levels.Add(CurrentLevel); // Adds level to list
         }
+        public void Update(float _delta)
+        {
+            CurrentLevel?.Update(_delta);
+        }
+
 
         public void Render() // Draws current level
         {

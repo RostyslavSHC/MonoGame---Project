@@ -9,30 +9,31 @@ using System.Windows.Forms;
 // Groups this code inside the Editor project
 namespace Editor.Editor
 {
-    public class GameEditor : Game // Creates the MonoGame editor
+
+    public class GameEditor : Game
     {
-        private Camera m_camera; // Stores the camera
-        private Models m_teapot; // Stores the 3D model
-        private Effect m_myShader; // Stores the shader
-        private Texture m_metalTexture; // Stores the texture
+        internal Project Project { get; set; }
 
+        private GraphicsDeviceManager m_graphics; // Manages graphics
+        private FormEditor m_parent; // Stores the editor window
+        private SpriteBatch m_spriteBatch; // Draws text on screen
+        private FontController m_fonts; // Manages fonts
 
-        internal Project Project { get; set; } // Stores the project
+        RasterizerState m_rasterState = new RasterizerState(); // Controls how 3D surfaces are drawn
+        DepthStencilState m_depthStencilState = new DepthStencilState(); // Controls which objects appear in front
 
-        private GraphicsDeviceManager m_graphics; // Manages the graphics device
-        private FormEditor m_parent; // Stores the main editor window
-
-        private SpriteBatch m_spriteBatch; // Draws 2D elements
-        private FontController m_fonts; // Handles fonts
-
-        // private Level m_level; // Stores the level
-
-        public GameEditor() // Runs when GameEditor is created
+        public GameEditor()
         {
-            m_graphics = new GraphicsDeviceManager(this); // Creates the graphics manager
-            Content.RootDirectory = "Content"; // Sets folder for game files
-            IsMouseVisible = true; // Makes mouse cursor visible
+            m_graphics = new GraphicsDeviceManager(this); // Creates graphics manager
+            Content.RootDirectory = "Content"; // Sets content folder
+            IsMouseVisible = true; // Shows mouse cursor
+
+            m_rasterState = new RasterizerState(); // Creates rasterizer settings
+            m_rasterState.CullMode = CullMode.None; // Draws both sides of 3D surfaces
+            m_depthStencilState = new DepthStencilState(); // Creates depth settings
+            m_depthStencilState.DepthBufferEnable = true; // Enables depth testing
         }
+
 
         // Creates GameEditor inside the editor form
         public GameEditor(FormEditor _parent) : this()
@@ -81,6 +82,12 @@ namespace Editor.Editor
         // Runs every frame to update the game
         protected override void Update(GameTime gameTime)
         {
+            if (Project != null)
+            {
+                Project.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000); // Updates the project
+                InputController.Instance.Clear();
+            }
+
             base.Update(gameTime); // Runs MonoGame's normal update
         }
 
@@ -90,18 +97,18 @@ namespace Editor.Editor
             // Clear the screen with a blue background
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            if (Project != null)
+            if (Project != null) // Check if a project exists
             {
-                // Allow both sides of the 3D models to be visible
-                RasterizerState state = new RasterizerState();
-                state.CullMode = CullMode.None;
-                GraphicsDevice.RasterizerState = state;
-
+                GraphicsDevice.RasterizerState = m_rasterState; // Set how 3D surfaces are drawn
+                GraphicsDevice.DepthStencilState = m_depthStencilState; // Enable depth testing
                 Project.Render(); // Draw the project
+
                 m_spriteBatch.Begin(); // Start drawing text
-                m_fonts.Draw(m_spriteBatch, 20, InputController.Instance.ToString(), new Vector2(20, 20), Color.White); // Show currently pressed keyboard keys and mouse buttons
+                m_fonts.Draw(m_spriteBatch, 20, InputController.Instance.ToString(), new Vector2(20, 20), Color.White); // Show pressed keys and buttons
+                m_fonts.Draw(m_spriteBatch, 16, Project.CurrentLevel.ToString(), new Vector2(20, 80), Color.Yellow); // Show level information
                 m_spriteBatch.End(); // Finish drawing text
             }
+
 
             base.Draw(gameTime);
         }

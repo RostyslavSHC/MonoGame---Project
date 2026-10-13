@@ -15,6 +15,7 @@ namespace Editor.Engine
     internal class Camera : ISerializable
     {
         public Vector3 Position { get; set; } = new Vector3(0, 0, 0); // Stores camera position in 3D vector
+        public Vector3 Target { get; set;  } = new Vector3(0, 0, 0); // Stores what camera is looking at
         public Matrix View { get; set; } = Matrix.Identity; // Stores what camera is looking at (using Matrix)
         public Matrix Projection { get; set; } = Matrix.Identity; // Stores how 3D is shown on screen (using Matrix)
         public float NearPlane { get; set; } = 0.1f; // Closest visible distance
@@ -34,12 +35,62 @@ namespace Editor.Engine
         {
             Position = _position; // Sets the camera position
             AspectRatio = _aspectRatio; // Sets the camera aspect ratio
-            View = Matrix.CreateLookAt(Position, // Creates the camera view
-                                       new Vector3(0, 0, 0), // Makes the camera look at the center
-                                       Vector3.Up); // Defines which direction is up
-
+            View = Matrix.CreateLookAt(Position, Target, Vector3.Up);
             Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), AspectRatio, NearPlane, FarPlane); // Creates the camera projection
         }
+
+
+
+        public void Translate(Vector3 _translate)
+        {
+            // Calculate distance between camera and target
+            float distance = Vector3.Distance(Target, Position);
+
+            // Get the direction the camera is facing
+            Vector3 forward = Target - Position;
+            forward.Normalize();
+
+            // Find the left direction
+            Vector3 left = Vector3.Cross(forward, Vector3.Up);
+            left.Normalize();
+
+            // Find the up direction
+            Vector3 up = Vector3.Cross(left, forward);
+            up.Normalize();
+
+            // Move camera left or right
+            Position += left * _translate.X * distance;
+
+            // Move camera up or down
+            Position += up * _translate.Y * distance;
+
+            // Move camera forward or backward
+            Position += forward * _translate.Z * 100f;
+
+            // Move the target along with the camera
+            Target += left * _translate.X * distance;
+            Target += up * _translate.Y * distance;
+
+            // Update camera view and projection
+            Update(Position, AspectRatio);
+        }
+
+        public void Rotate(Vector3 _rotate)
+        {
+            Position = Vector3.Transform(Position - Target, Matrix.CreateRotationY(_rotate.Y)); // Move camera around the target using Y-axis rotation
+            Position += Target; // Move camera back relative to the target
+            Update(Position, AspectRatio); // Update camera view and projection
+        }
+
+        public override string ToString()
+        {
+            // Convert camera position into text
+            string s = "Camera Position: " + Position.ToString();
+            return s;
+        }
+
+
+
 
 
 

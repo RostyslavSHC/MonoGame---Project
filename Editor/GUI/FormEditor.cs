@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using Editor;
 using Editor.Editor;
 using Editor.Engine;
+using Microsoft.Xna.Framework;
 
 
 
@@ -40,6 +41,8 @@ namespace Editor
             Form gameForm = Control.FromHandle(m_game.Window.Handle) as Form;
             gameForm.MouseDown += GameForm_MouseDown;
             gameForm.MouseUp += GameForm_MouseUp;
+            gameForm.MouseWheel += GameForm_MouseWheel;
+            gameForm.MouseMove += GameForm_MouseMove;
             KeyDown += GameForm_KeyDown;
             KeyUp += GameForm_KeyUp;
         }
@@ -104,26 +107,46 @@ namespace Editor
 
 
 
+        private void GameForm_MouseMove(object sender, MouseEventArgs e)
+        {
+            var p = new Vector2(e.Location.X, e.Location.Y); // Get mouse position
+            InputController.Instance.MousePosition = p; // Save current mouse position
+        }
+
+        private void GameForm_MouseWheel(object sender, MouseEventArgs e)
+        {
+            // Save how much the mouse wheel was scrolled
+            InputController.Instance.SetWheel(e.Delta / SystemInformation.MouseWheelScrollDelta);
+        }
 
         private void GameForm_MouseUp(object sender, MouseEventArgs e)
         {
-            InputController.Instance.SetButtonUp(e.Button); // Mouse button was released
-        } 
+            InputController.Instance.SetButtonUp(e.Button); // Mouse button released
+
+            var p = new Vector2(e.Location.X, e.Location.Y); // Get mouse position
+            InputController.Instance.DragEnd = p; // Save where dragging ended
+        }
 
         private void GameForm_MouseDown(object sender, MouseEventArgs e)
         {
-            InputController.Instance.SetButtonDown(e.Button); // Mouse button was pressed
+            InputController.Instance.SetButtonDown(e.Button); // Mouse button pressed
+
+            var p = new Vector2(e.Location.X, e.Location.Y); // Get mouse position
+            InputController.Instance.DragStart = p; // Save where dragging started
         }
 
         private void GameForm_KeyUp(object sender, KeyEventArgs e)
         {
-            InputController.Instance.SetKeyUp(e.KeyCode); // Keyboard key was released
+            InputController.Instance.SetKeyUp(e.KeyCode); // Keyboard key released
+            e.Handled = true; // Mark the event as handled
         }
 
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
-            InputController.Instance.SetKeyDown(e.KeyCode); // Keyboard key was pressed
+            InputController.Instance.SetKeyDown(e.KeyCode); // Keyboard key pressed
+            e.Handled = true; // Mark the event as handled
         }
+
 
 
 

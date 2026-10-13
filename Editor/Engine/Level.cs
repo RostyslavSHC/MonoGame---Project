@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 
 // Groups this code inside the Editor project
 namespace Editor.Engine
@@ -30,6 +31,8 @@ namespace Editor.Engine
             //teapot.SetShader(_content.Load<Effect>("MyShader")); // Gives teapot its shader
             Models teapot = new(_content, "Teapot", "Metal", "MyShader", Vector3.Zero, 1.0f);
             AddModel(teapot); // Adds teapot to the level
+            teapot = new(_content, "Teapot", "Metal", "MyShader", new Vector3(1, 0, 0), 1.0f);
+            AddModel(teapot);
         }
 
         public void AddModel(Models _model) // Adds model to level
@@ -44,6 +47,82 @@ namespace Editor.Engine
                 m.Render(m_camera.View, m_camera.Projection); // Draws model using camera
             }
         }
+
+
+
+
+
+
+
+
+        public void Update(float _delta)
+        {
+            InputController ic = InputController.Instance; // Gets keyboard and mouse input
+            Vector3 translate = Vector3.Zero; // Stores camera movement
+
+            if (ic.IsKeyDown(Keys.Left)) translate.X += -10; // Move left
+            if (ic.IsKeyDown(Keys.Right)) translate.X += 10; // Move right
+
+            if (ic.IsKeyDown(Keys.Menu)) // Check if Alt is pressed
+            {
+                if (ic.IsKeyDown(Keys.Up)) translate.Z += 1; // Zoom in
+                if (ic.IsKeyDown(Keys.Down)) translate.Z += -1; // Zoom out
+            }
+            else
+            {
+                if (ic.IsKeyDown(Keys.Up)) translate.Y += 10; // Move up
+                if (ic.IsKeyDown(Keys.Down)) translate.Y += -10; // Move down
+            }
+
+            if (ic.IsButtonDown(MouseButtons.Middle)) // Check if middle mouse button is pressed
+            {
+                Vector2 dir = ic.MousePosition - ic.LastPosition; // Calculate mouse movement
+                translate.X -= dir.X; // Move camera horizontally
+                translate.Y = dir.Y; // Move camera vertically
+            }
+
+            if (ic.GetWheel() != 0) // Check if mouse wheel was scrolled
+            {
+                translate.Z = ic.GetWheel() * 2; // Zoom using mouse wheel
+            }
+
+            if (translate != Vector3.Zero) // Only move camera if there is input
+            {
+                m_camera.Translate(translate * 0.001f); // Apply camera movement
+            }
+
+            if (ic.IsButtonDown(MouseButtons.Right)) // Check if right mouse button is pressed
+            {
+                Vector2 dir = ic.MousePosition - ic.LastPosition; // Calculate mouse movement
+
+                if (dir != Vector2.Zero) // Only rotate if mouse moved
+                {
+                    Vector3 movement = new Vector3(dir.Y, dir.X, 0) * _delta; // Calculate rotation
+                    m_camera.Rotate(movement); // Rotate camera
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -73,6 +152,11 @@ namespace Editor.Engine
             }
 
             m_camera.Deserialize(_stream, _content);
+        }
+
+        public override string ToString()
+        {
+            return m_camera.ToString();
         }
 
 
