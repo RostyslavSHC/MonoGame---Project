@@ -77,8 +77,8 @@ namespace Editor.Engine
             if (ic.IsButtonDown(MouseButtons.Middle)) // Check if middle mouse button is pressed
             {
                 Vector2 dir = ic.MousePosition - ic.LastPosition; // Calculate mouse movement
-                translate.X = dir.X; // Move camera horizontally
-                translate.Y = -dir.Y; // Move camera vertically
+                translate.X -= dir.X; // Move camera horizontally
+                translate.Y = dir.Y; // Move camera vertically
             }
 
             if (ic.GetWheel() != 0) // Check if mouse wheel was scrolled
