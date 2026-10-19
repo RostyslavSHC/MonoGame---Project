@@ -13,7 +13,6 @@ namespace Editor.Editor
     public class GameEditor : Game
     {
         internal Project Project { get; set; }
-
         private GraphicsDeviceManager m_graphics; // Manages graphics
         private FormEditor m_parent; // Stores the editor window
         private SpriteBatch m_spriteBatch; // Draws text on screen
@@ -79,27 +78,61 @@ namespace Editor.Editor
             m_fonts.LoadContent(Content); // Loads the fonts
         }
 
-        // Runs every frame to update the game
 
+
+
+
+
+        // Refreshes the PropertyGrid when a model property changes
+        private void ModelPropertyChanged(object _sender, System.ComponentModel.PropertyChangedEventArgs _e)
+        {
+            if (_e.PropertyName == nameof(Models.Selected)) // Check if selection status changed
+            {
+                Project.CurrentLevel.MarkSelectionChanged(); // Mark selection for updating
+            }
+
+            m_parent.propertyGrid.Refresh(); // Refresh the PropertyGrid to show updated values
+        }
+
+
+
+        // Runs every frame to update the game
         protected override void Update(GameTime gameTime)
         {
             if (Project != null) // Check if a project exists
             {
                 Project.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000); // Update the project using time between frames
                 InputController.Instance.Clear(); // Reset mouse input for the next frame
-                var models = Project.CurrentLevel.GetSelectedModels(); // Get all selected models
+                if (Project.CurrentLevel.HasSelectionChanged()) // Update PropertyGrid only when selection changes
+                {
+                    // Stop listening to previously selected models
+                    foreach (Models model in m_parent.propertyGrid.SelectedObjects)
+                    {
+                        model.PropertyChanged -= ModelPropertyChanged;
+                    }
 
-                if (models.Count == 0) // No models selected
-                {
-                    m_parent.propertyGrid.SelectedObject = null; // Clear property grid
-                }
-                else if (models.Count > 1) // Multiple models selected
-                {
-                    m_parent.propertyGrid.SelectedObjects = models.ToArray(); // Show multiple models
-                }
-                else // One model selected
-                {
-                    m_parent.propertyGrid.SelectedObject = models[0]; // Show selected model
+                    var models = Project.CurrentLevel.GetSelectedModels(); // Get all selected models
+
+                    if (models.Count == 0) // No models selected
+                    {
+                        m_parent.propertyGrid.SelectedObject = null; // Clear property grid
+                    }
+                    else if (models.Count > 1) // Multiple models selected
+                    {
+                        m_parent.propertyGrid.SelectedObjects = models.ToArray(); // Show multiple models
+                    }
+                    else // One model selected
+                    {
+                        m_parent.propertyGrid.SelectedObject = models[0]; // Show selected model
+                    }
+
+                    // Listen for changes to newly selected models
+                    foreach (Models model in models)
+                    {
+                        model.PropertyChanged += ModelPropertyChanged;
+                    }
+
+                    Project.CurrentLevel.ClearSelectionChanged(); // Mark selection as updated
                 }
             }
 

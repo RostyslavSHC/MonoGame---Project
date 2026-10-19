@@ -9,27 +9,140 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 // Groups this code inside the Editor project
 namespace Editor.Engine
 {
     // Represents and controls a 3D model
-    class Models : ISerializable
+    [DefaultProperty("Position")]
+    class Models : ISerializable, INotifyPropertyChanged
     {
+
+        // Property Changed
+        public event PropertyChangedEventHandler PropertyChanged; // Event triggered when a property changes
+
+        protected void OnPropertyChanged(string _propertyName) // Notifies when a property changes
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(_propertyName)); // ?. means the event is called only if something is listening to it
+        }
+
+
         // Accessors
+        [Browsable(false)]
         public Model Mesh { get; set; } // Stores 3D model
+
+        [Browsable(false)]
         public Effect Shader { get; set; } // Stores shader used to draw model
-        public Vector3 Position { get => m_position; set { m_position = value; } } // Gets or changes the model position
-        public Vector3 Rotation { get => m_rotation; set { m_rotation = value; } } // Gets or changes the model rotation
-        public float Scale { get; set; } // Stores the model size
-        public bool Selected { get; set; } = false;
+
+
+        [Category("Transformation")]
+        [Description("Position of the model in world space.")]
+        public Vector3 Position // Gets or changes the model position
+        {
+            get => m_position;
+            set
+            {
+                if (m_position != value) // Check if position changed
+                {
+                    m_position = value; // Save new position
+                    OnPropertyChanged(nameof(Position)); // Notify PropertyGrid
+                }
+            }
+        }
+
+        [Category("Transformation")]
+        [Description("Rotation of the model.")]
+        public Vector3 Rotation // Gets or changes the model rotation
+        {
+            get => m_rotation;
+            set
+            {
+                if (m_rotation != value) // Check if rotation changed
+                {
+                    m_rotation = value; // Save new rotation
+                    OnPropertyChanged(nameof(Rotation)); // Notify PropertyGrid
+                }
+            }
+        }
+
+        [Category("Transformation")]
+        [Description("Scale of the model.")]
+        public float Scale // Gets or changes the model size
+        {
+            get => m_scale;
+            set
+            {
+                if (m_scale != value) // Check if scale changed
+                {
+                    m_scale = value; // Save new scale
+                    OnPropertyChanged(nameof(Scale)); // Notify PropertyGrid
+                }
+            }
+        }
+
+        [Category("State")]
+        [Description("Selection status.")]
+        public bool Selected // Gets or changes the selection status
+        {
+            get => m_selected;
+            set
+            {
+                if (m_selected != value) // Check if selection changed
+                {
+                    m_selected = value; // Save selection status
+                    OnPropertyChanged(nameof(Selected)); // Notify PropertyGrid
+                }
+            }
+        }
+
+
 
         // Texturing
+        [Browsable(false)]
         public Texture Texture { get; set; } // Stores texture placed on model
 
+        [Category("Appearance")]
+        [Description("Diffuse texture of the model.")]
+        [TypeConverter(typeof(DiffuseTextureConverter))]
+        public string DiffuseTexture // Gets or changes the model texture
+        {
+            get => m_diffuseTexture;
+            set
+            {
+                if (m_diffuseTexture != value) // Check if texture changed
+                {
+                    if (m_content != null) // Check if content manager exists
+                    {
+                        Texture newTexture = m_content.Load<Texture>(value); // Load new texture first
+                        newTexture.Tag = value; // Store texture name for serialization
+                        Texture = newTexture; // Apply new texture
+                    }
+
+                    m_diffuseTexture = value; // Save selected texture name
+
+                    OnPropertyChanged(nameof(DiffuseTexture)); // Notify listeners
+                }
+            }
+        }
+
         // Members
-        private Vector3 m_position; // Stores position
-        private Vector3 m_rotation; // Stores rotation
+        private Vector3 m_position;
+        private Vector3 m_rotation;
+        private float m_scale;
+        private bool m_selected = false; // Stores selection status
+        private ContentManager m_content; // Stores content manager for loading textures
+        private string m_diffuseTexture = "Metal"; // Stores selected texture name
+
+
+
+
+
+
+
+
+
+
 
         public Models()
         {
@@ -59,15 +172,22 @@ namespace Editor.Engine
                            Vector3 _position,
                            float _scale)
         {
+            m_content = _content; // Store content manager for texture changes
+
             Mesh = _content.Load<Model>(_model);
             Mesh.Tag = _model;
+
+            m_diffuseTexture = _texture; // Store initial texture name
             Texture = _content.Load<Texture>(_texture);
             Texture.Tag = _texture;
+
+
+
             Shader = _content.Load<Effect>(_effect);
             Shader.Tag = _effect;
             SetShader(Shader);
-            m_position = _position;
-            Scale = _scale;
+            Position = _position; // Set model position and notify if changed
+            Scale = _scale; // Set model scale and notify if changed
         }
 
 

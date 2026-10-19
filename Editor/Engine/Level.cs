@@ -7,31 +7,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-// Groups this code inside the Editor project
 namespace Editor.Engine
 {
     internal class Level : ISerializable // Represents one game level
     {
         // Accessors
-        public Camera GetCamera() { return m_camera; } // Returns level's camera
+        public Camera GetCamera() { return m_camera; }
 
         // Members
         private List<Models> m_models = new(); // Stores all models in this level
-        private Camera m_camera = new(new Vector3(0, 1, 1), 16.0f / 9.0f); // Creates level camera (had to change Vector3(0, 2, 2) to Vector3(0, 1, 1) and 16/9 to 16.0f/9.0f) ------------------
+        private bool m_selectionChanged = true; // Tracks if the model selection changed
+        private Camera m_camera = new(new Vector3(0, 0, -20), 16.0f / 9.0f); // Creates level camera at (0, 0, -20)
 
 
 
-        public Level() // Runs when level is created
+        public Level() // Constructor
         {
         }
 
         public void LoadContent(ContentManager _content) // Loads level's files and assets
         {
-            //Models teapot = new(_content.Load<Model>("Teapot"), _content.Load<Texture>("Metal"), Vector3.Zero, 1.0f); // Creates teapot model
-            //teapot.SetShader(_content.Load<Effect>("MyShader")); // Gives teapot its shader
-            Models teapot = new(_content, "Teapot", "Metal", "MyShader", Vector3.Zero, 1.0f);
-            AddModel(teapot); // Adds teapot to the level
-            teapot = new(_content, "Teapot", "Metal", "MyShader", new Vector3(1, 0, 0), 1.0f);
+            // Creates teapot at (0, 0, 0) with scale 15 and adds it to level
+            Models teapot = new(_content, "Teapot", "Metal", "MyShader", Vector3.Zero, 15.0f);
             AddModel(teapot);
         }
 
@@ -51,6 +48,22 @@ namespace Editor.Engine
             }
 
             return models; // Return all selected models
+        }
+
+        // Check if selection changed, if so mark it as updated, if not return false
+        public bool HasSelectionChanged() // Checks if the selection changed
+        {
+            return m_selectionChanged;
+        }
+
+        public void ClearSelectionChanged() // Marks the selection as updated
+        {
+            m_selectionChanged = false;
+        }
+
+        public void MarkSelectionChanged() // Marks selection as changed
+        {
+            m_selectionChanged = true; // PropertyGrid needs updating
         }
 
 
@@ -203,22 +216,46 @@ namespace Editor.Engine
 
                 foreach (Models model in m_models) // Check every model in the level
                 {
-                    model.Selected = false; // First unselect the model
+                    bool wasSelected = model.Selected; // Store previous selection
+                    bool isSelected = false; // Track if the model is clicked
 
-                    foreach (ModelMesh mesh in model.Mesh.Meshes) // Check every mesh in the model
+                    foreach (ModelMesh mesh in model.Mesh.Meshes) // Check every mesh
                     {
                         BoundingSphere s = mesh.BoundingSphere; // Get mesh bounding sphere
-                        s = s.Transform(model.GetTransform()); // Move sphere to model's world position
+                        s = s.Transform(model.GetTransform()); // Transform sphere to world position
 
-                        float? f = r.Intersects(s); // Check if the ray hits the sphere
-                        if (f.HasValue) // If hit happened
+                        float? f = r.Intersects(s); // Check if mouse ray hits the model
+
+                        if (f.HasValue) // If the model was clicked
                         {
-                            model.Selected = true; // Mark this model as selected
+                            isSelected = true; // Select model
+                            break; // No need to check other meshes
                         }
+                    }
+
+                    model.Selected = isSelected; // Update model selection
+
+                    if (wasSelected != isSelected) // Check if selection changed
+                    {
+                        m_selectionChanged = true; // PropertyGrid needs updating
                     }
                 }
             }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public void Update(float _delta)
         {
