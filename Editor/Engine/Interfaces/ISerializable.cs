@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using System.IO;
 
-// Groups this interface inside the Interfaces folder
 namespace Editor.Engine.Interfaces
 {
     // Defines rules for saving and loading objects

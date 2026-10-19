@@ -12,10 +12,10 @@ namespace Editor.Editor
 {
     internal class Project : ISerializable // Represents 1 editor project
     {
-        public Level CurrentLevel { get; set; } = null; // Stores current active level
-        public List<Level> Levels { get; set; } = new(); // Stores all levels in project
-        public string Folder { get; set; } = string.Empty; // Stores project folder
-        public string Name { get; set; } = string.Empty; // Stores project name
+        public Level CurrentLevel { get; set; } = null;
+        public List<Level> Levels { get; set; } = new();
+        public string Folder { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         public Project() 
         {
@@ -31,7 +31,6 @@ namespace Editor.Editor
                 Name += ".oce"; // Adds .oce if missing
             }
 
-            // Add a default level
             AddLevel(_content); // Creates first level
         }
 
@@ -51,8 +50,6 @@ namespace Editor.Editor
         {
             CurrentLevel.Render(); // Renders current level
         }
-
-
 
 
 

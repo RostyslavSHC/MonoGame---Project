@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 
-// Groups this code inside the Editor project
 namespace Editor.Engine
 {
     // Provides texture options for the PropertyGrid dropdown
@@ -14,12 +13,12 @@ namespace Editor.Engine
 
         public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
         {
-            return true; // Allows only values from the dropdown
+            return true; // Allows only values from dropdown
         }
 
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            return new StandardValuesCollection(new string[] { "Grass", "HeightMap", "Metal" }); // Returns the three texture options
+            return new StandardValuesCollection(new string[] { "Grass", "HeightMap", "Metal" }); // Returns the 3 texture options
         }
     }
 }

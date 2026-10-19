@@ -6,17 +6,16 @@ using Microsoft.Xna.Framework.Input;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-// Groups this code inside the Editor project
 namespace Editor.Editor
 {
-
     public class GameEditor : Game
     {
+        // Properties
         internal Project Project { get; set; }
-        private GraphicsDeviceManager m_graphics; // Manages graphics
-        private FormEditor m_parent; // Stores the editor window
-        private SpriteBatch m_spriteBatch; // Draws text on screen
-        private FontController m_fonts; // Manages fonts
+        private GraphicsDeviceManager m_graphics;
+        private FormEditor m_parent;
+        private SpriteBatch m_spriteBatch;
+        private FontController m_fonts;
 
         RasterizerState m_rasterState = new RasterizerState(); // Controls how 3D surfaces are drawn
         DepthStencilState m_depthStencilState = new DepthStencilState(); // Controls which objects appear in front
@@ -24,12 +23,12 @@ namespace Editor.Editor
         public GameEditor()
         {
             m_graphics = new GraphicsDeviceManager(this); // Creates graphics manager
-            Content.RootDirectory = "Content"; // Sets content folder
-            IsMouseVisible = true; // Shows mouse cursor
+            Content.RootDirectory = "Content";
+            IsMouseVisible = true;
 
-            m_rasterState = new RasterizerState(); // Creates rasterizer settings
+            m_rasterState = new RasterizerState();
             m_rasterState.CullMode = CullMode.None; // Draws both sides of 3D surfaces
-            m_depthStencilState = new DepthStencilState(); // Creates depth settings
+            m_depthStencilState = new DepthStencilState();
             m_depthStencilState.DepthBufferEnable = true; // Enables depth testing
         }
 
@@ -38,49 +37,25 @@ namespace Editor.Editor
         public GameEditor(FormEditor _parent) : this()
         {
             m_parent = _parent; // Saves parent editor window
-            Form gameForm = Control.FromHandle(Window.Handle) as Form; // Gets MonoGame window as a Windows Form
-            gameForm.TopLevel = false; // Makes it part of another window
-            gameForm.Dock = DockStyle.Fill; // Makes it fill the available space
-            gameForm.FormBorderStyle = FormBorderStyle.None; // Removes the window border
-            m_parent.splitContainer.Panel1.Controls.Add(gameForm); // Adds the game window into Panel1
+            Form gameForm = Control.FromHandle(Window.Handle) as Form;
+            gameForm.TopLevel = false;
+            gameForm.Dock = DockStyle.Fill;
+            gameForm.FormBorderStyle = FormBorderStyle.None;
+            m_parent.splitContainer.Panel1.Controls.Add(gameForm);
         }
 
-        // Runs when the game starts
         protected override void Initialize()
         {
-            // m_camera = new Camera(new Vector3(0, 1, 1), m_graphics.GraphicsDevice.Viewport.AspectRatio); // Creates the camera and sets its position and aspect ratio
-            // RasterizerState state = new RasterizerState(); // Creates the rasterizer state
-            // state.CullMode = CullMode.None; // Disables culling
-            // GraphicsDevice.RasterizerState = state; // Sets the rasterizer state
-
-            base.Initialize(); // Runs MonoGame's normal setup
+            base.Initialize();
         }
 
         // Used to load game files and assets
         protected override void LoadContent()
         {
-            /*
-            m_level = new(); // Creates the level
-            m_level.LoadContent(Content); // Loads level's files and assets
-            AdjustAspectRatio(); // Adjusts the aspect ratio
-            */
-
-            /*
-            m_myShader = Content.Load<Effect>("MyShader"); // Loads the shader
-            m_metalTexture = Content.Load<Texture>("Metal"); // Loads the texture
-
-            m_teapot = new Models(Content.Load<Model>("Teapot"), m_metalTexture, Vector3.Zero, 1); // Creates the 3D model
-            m_teapot.SetShader(m_myShader); // Sets the shader
-            */
-
-            m_spriteBatch = new(GraphicsDevice); // Creates the sprite batch
-            m_fonts = new(); // Creates the font controller
-            m_fonts.LoadContent(Content); // Loads the fonts
+            m_spriteBatch = new(GraphicsDevice);
+            m_fonts = new();
+            m_fonts.LoadContent(Content);
         }
-
-
-
-
 
 
         // Refreshes the PropertyGrid when a model property changes
@@ -102,7 +77,7 @@ namespace Editor.Editor
             if (Project != null) // Check if a project exists
             {
                 Project.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000); // Update the project using time between frames
-                InputController.Instance.Clear(); // Reset mouse input for the next frame
+                InputController.Instance.Clear();
                 if (Project.CurrentLevel.HasSelectionChanged()) // Update PropertyGrid only when selection changes
                 {
                     // Stop listening to previously selected models
@@ -111,19 +86,20 @@ namespace Editor.Editor
                         model.PropertyChanged -= ModelPropertyChanged;
                     }
 
-                    var models = Project.CurrentLevel.GetSelectedModels(); // Get all selected models
 
-                    if (models.Count == 0) // No models selected
+                    var models = Project.CurrentLevel.GetSelectedModels();
+
+                    if (models.Count == 0) // No models selected, clear PropertyGrid
                     {
-                        m_parent.propertyGrid.SelectedObject = null; // Clear property grid
+                        m_parent.propertyGrid.SelectedObject = null;
                     }
-                    else if (models.Count > 1) // Multiple models selected
+                    else if (models.Count > 1) // Multiple models selected, show all
                     {
-                        m_parent.propertyGrid.SelectedObjects = models.ToArray(); // Show multiple models
+                        m_parent.propertyGrid.SelectedObjects = models.ToArray();
                     }
-                    else // One model selected
+                    else // One model selected, show it
                     {
-                        m_parent.propertyGrid.SelectedObject = models[0]; // Show selected model
+                        m_parent.propertyGrid.SelectedObject = models[0];
                     }
 
                     // Listen for changes to newly selected models
@@ -143,14 +119,13 @@ namespace Editor.Editor
         // Runs every frame to draw the game
         protected override void Draw(GameTime gameTime)
         {
-            // Clear the screen with a blue background
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.CornflowerBlue); // Clear the screen with a blue background
 
-            if (Project != null) // Check if a project exists
+            if (Project != null)
             {
-                GraphicsDevice.RasterizerState = m_rasterState; // Set how 3D surfaces are drawn
-                GraphicsDevice.DepthStencilState = m_depthStencilState; // Enable depth testing
-                Project.Render(); // Draw the project
+                GraphicsDevice.RasterizerState = m_rasterState;
+                GraphicsDevice.DepthStencilState = m_depthStencilState;
+                Project.Render();
 
                 m_spriteBatch.Begin(); // Start drawing text
                 m_fonts.Draw(m_spriteBatch, 20, InputController.Instance.ToString(), new Vector2(20, 20), Color.White); // Show pressed keys and buttons
@@ -165,10 +140,10 @@ namespace Editor.Editor
         // Adjusts the aspect ratio of the camera
         public void AdjustAspectRatio()
         {
-            if (Project == null) return; // If the project is not loaded, do nothing
-            Camera c = Project.CurrentLevel.GetCamera(); // Gets the camera
-            c.Viewport = m_graphics.GraphicsDevice.Viewport; // Sets the viewport
-            c.Update(c.Position, m_graphics.GraphicsDevice.Viewport.AspectRatio); // Updates the camera
+            if (Project == null) return;
+            Camera c = Project.CurrentLevel.GetCamera();
+            c.Viewport = m_graphics.GraphicsDevice.Viewport;
+            c.Update(c.Position, m_graphics.GraphicsDevice.Viewport.AspectRatio);
         }
     }
 }

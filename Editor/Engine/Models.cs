@@ -30,7 +30,7 @@ namespace Editor.Engine
 
         // Accessors
         [Browsable(false)]
-        public Model Mesh { get; set; } // Stores 3D model
+        public Model Mesh { get; set; }
 
         [Browsable(false)]
         public Effect Shader { get; set; } // Stores shader used to draw model
@@ -43,10 +43,10 @@ namespace Editor.Engine
             get => m_position;
             set
             {
-                if (m_position != value) // Check if position changed
+                if (m_position != value) // Check if position changed and notify PropertyGrid
                 {
-                    m_position = value; // Save new position
-                    OnPropertyChanged(nameof(Position)); // Notify PropertyGrid
+                    m_position = value;
+                    OnPropertyChanged(nameof(Position));
                 }
             }
         }
@@ -58,10 +58,10 @@ namespace Editor.Engine
             get => m_rotation;
             set
             {
-                if (m_rotation != value) // Check if rotation changed
+                if (m_rotation != value) // Check if rotation changed, if so save it and notify PropertyGrid
                 {
-                    m_rotation = value; // Save new rotation
-                    OnPropertyChanged(nameof(Rotation)); // Notify PropertyGrid
+                    m_rotation = value;
+                    OnPropertyChanged(nameof(Rotation));
                 }
             }
         }
@@ -73,10 +73,10 @@ namespace Editor.Engine
             get => m_scale;
             set
             {
-                if (m_scale != value) // Check if scale changed
+                if (m_scale != value) // Check if scale changed, if so save it and notify PropertyGrid
                 {
-                    m_scale = value; // Save new scale
-                    OnPropertyChanged(nameof(Scale)); // Notify PropertyGrid
+                    m_scale = value;
+                    OnPropertyChanged(nameof(Scale));
                 }
             }
         }
@@ -88,10 +88,10 @@ namespace Editor.Engine
             get => m_selected;
             set
             {
-                if (m_selected != value) // Check if selection changed
+                if (m_selected != value) // Check if selection changed, if so save it and notify PropertyGrid
                 {
-                    m_selected = value; // Save selection status
-                    OnPropertyChanged(nameof(Selected)); // Notify PropertyGrid
+                    m_selected = value;
+                    OnPropertyChanged(nameof(Selected));
                 }
             }
         }
@@ -100,7 +100,7 @@ namespace Editor.Engine
 
         // Texturing
         [Browsable(false)]
-        public Texture Texture { get; set; } // Stores texture placed on model
+        public Texture Texture { get; set; }
 
         [Category("Appearance")]
         [Description("Diffuse texture of the model.")]
@@ -110,13 +110,13 @@ namespace Editor.Engine
             get => m_diffuseTexture;
             set
             {
-                if (m_diffuseTexture != value) // Check if texture changed
+                if (m_diffuseTexture != value)
                 {
-                    if (m_content != null) // Check if content manager exists
+                    if (m_content != null)
                     {
-                        Texture newTexture = m_content.Load<Texture>(value); // Load new texture first
-                        newTexture.Tag = value; // Store texture name for serialization
-                        Texture = newTexture; // Apply new texture
+                        Texture newTexture = m_content.Load<Texture>(value);
+                        newTexture.Tag = value;
+                        Texture = newTexture;
                     }
 
                     m_diffuseTexture = value; // Save selected texture name
@@ -130,9 +130,9 @@ namespace Editor.Engine
         private Vector3 m_position;
         private Vector3 m_rotation;
         private float m_scale;
-        private bool m_selected = false; // Stores selection status
-        private ContentManager m_content; // Stores content manager for loading textures
-        private string m_diffuseTexture = "Metal"; // Stores selected texture name
+        private bool m_selected = false;
+        private ContentManager m_content;
+        private string m_diffuseTexture = "Metal";
 
 
 
@@ -153,15 +153,9 @@ namespace Editor.Engine
                       string _texture,
                       string _effect,
                       Vector3 _position,
-                      float _scale) // Receives 3D model, texture, starting position,  starting size
+                      float _scale) // Receives 3D model, texture, starting position, starting size
         {
             Create(_content, _model, _texture, _effect, _position, _scale);
-            /*
-            Mesh = _model; // Saves the model
-            Texture = _texture; // Saves the texture
-            m_position = _position; // Saves the starting position
-            Scale = _scale; // Saves the starting size
-            */
 
         }
 
@@ -172,7 +166,7 @@ namespace Editor.Engine
                            Vector3 _position,
                            float _scale)
         {
-            m_content = _content; // Store content manager for texture changes
+            m_content = _content;
 
             Mesh = _content.Load<Model>(_model);
             Mesh.Tag = _model;
@@ -186,8 +180,8 @@ namespace Editor.Engine
             Shader = _content.Load<Effect>(_effect);
             Shader.Tag = _effect;
             SetShader(Shader);
-            Position = _position; // Set model position and notify if changed
-            Scale = _scale; // Set model scale and notify if changed
+            Position = _position;
+            Scale = _scale;
         }
 
 
@@ -195,11 +189,11 @@ namespace Editor.Engine
         public void SetShader(Effect _effect) // Sets shader for model
         {
             Shader = _effect; // Saves shader
-            foreach (ModelMesh mesh in Mesh.Meshes) // Goes through every mesh in model
+            foreach (ModelMesh mesh in Mesh.Meshes)
             {
-                foreach (ModelMeshPart meshPart in mesh.MeshParts) // Loops through every mesh part
+                foreach (ModelMeshPart meshPart in mesh.MeshParts)
                 {
-                    meshPart.Effect = Shader; // Applies shader to that mesh part
+                    meshPart.Effect = Shader;
                 }
             }
         }
@@ -245,26 +239,23 @@ namespace Editor.Engine
         {
             return Matrix.CreateScale(Scale) * // Applies model size
                    Matrix.CreateFromYawPitchRoll(Rotation.Y, Rotation.X, Rotation.Z) * // Applies rotation
-                   Matrix.CreateTranslation(Position); // Applies position
+                   Matrix.CreateTranslation(Position);
         }
 
         public void Render(Matrix _view, Matrix _projection) // Receives camera view matrix and camera projection matrix
         {
-            // m_position.X += 0.001f; // Slowly moves the model on the X axis. I commented it because othervise teapot is tooo much to the right --------------------
-            // m_rotation.Y += 0.005f; // Slowly rotates the model on the Y axis
 
-            Shader.Parameters["World"].SetValue(GetTransform()); // Sends model transform to shader
-            Shader.Parameters["WorldViewProjection"].SetValue(GetTransform() * _view * _projection); // Sends all rendering matrices to shader
-            Shader.Parameters["Texture"].SetValue(Texture); // Sends texture to shader
+            Shader.Parameters["World"].SetValue(GetTransform());
+            Shader.Parameters["WorldViewProjection"].SetValue(GetTransform() * _view * _projection);
+            Shader.Parameters["Texture"].SetValue(Texture);
             Shader.Parameters["Tint"].SetValue(Selected);
 
 
-            foreach (ModelMesh mesh in Mesh.Meshes) // Loop through every mesh
+            foreach (ModelMesh mesh in Mesh.Meshes)
             {
-                mesh.Draw(); // Draws the mesh
+                mesh.Draw();
             }
         }
-
 
 
 

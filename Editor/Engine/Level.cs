@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace Editor.Engine
 {
-    internal class Level : ISerializable // Represents one game level
+    internal class Level : ISerializable
     {
         // Accessors
         public Camera GetCamera() { return m_camera; }
@@ -21,7 +21,7 @@ namespace Editor.Engine
 
 
 
-        public Level() // Constructor
+        public Level()
         {
         }
 
@@ -34,24 +34,24 @@ namespace Editor.Engine
 
         public void AddModel(Models _model) // Adds model to level
         {
-            m_models.Add(_model); // Stores model in list
+            m_models.Add(_model);
         }
 
 
         public List<Models> GetSelectedModels()
         {
-            List<Models> models = new List<Models>(); // Create an empty list
+            List<Models> models = new List<Models>();
 
-            foreach (var model in m_models) // Go through all models
+            foreach (var model in m_models)
             {
-                if (model.Selected) models.Add(model); // Add selected models to the list
+                if (model.Selected) models.Add(model);
             }
 
-            return models; // Return all selected models
+            return models;
         }
 
         // Check if selection changed, if so mark it as updated, if not return false
-        public bool HasSelectionChanged() // Checks if the selection changed
+        public bool HasSelectionChanged()
         {
             return m_selectionChanged;
         }
@@ -63,21 +63,17 @@ namespace Editor.Engine
 
         public void MarkSelectionChanged() // Marks selection as changed
         {
-            m_selectionChanged = true; // PropertyGrid needs updating
+            m_selectionChanged = true;
         }
-
-
-
-
 
 
 
 
         public void Render() // Draws level
         {
-            foreach (Models m in m_models) // Goes through every model
+            foreach (Models m in m_models)
             {
-                m.Render(m_camera.View, m_camera.Projection); // Draws model using camera
+                m.Render(m_camera.View, m_camera.Projection);
             }
         }
 
@@ -93,30 +89,30 @@ namespace Editor.Engine
             InputController ic = InputController.Instance; // Gets keyboard and mouse input
             Vector3 translate = Vector3.Zero; // Stores camera movement
 
-            if (ic.IsKeyDown(Keys.Left)) translate.X += -10; // Move left
-            if (ic.IsKeyDown(Keys.Right)) translate.X += 10; // Move right
+            if (ic.IsKeyDown(Keys.Left)) translate.X += -10;
+            if (ic.IsKeyDown(Keys.Right)) translate.X += 10;
 
             if (ic.IsKeyDown(Keys.Menu)) // Check if Alt is pressed
             {
-                if (ic.IsKeyDown(Keys.Up)) translate.Z += 1; // Zoom in
-                if (ic.IsKeyDown(Keys.Down)) translate.Z += -1; // Zoom out
+                if (ic.IsKeyDown(Keys.Up)) translate.Z += 1;
+                if (ic.IsKeyDown(Keys.Down)) translate.Z += -1;
             }
-            else
+            else // If Alt is not pressed
             {
-                if (ic.IsKeyDown(Keys.Up)) translate.Y += 10; // Move up
-                if (ic.IsKeyDown(Keys.Down)) translate.Y += -10; // Move down
+                if (ic.IsKeyDown(Keys.Up)) translate.Y += 10; 
+                if (ic.IsKeyDown(Keys.Down)) translate.Y += -10;
             }
 
             if (ic.IsButtonDown(MouseButtons.Middle)) // Check if middle mouse button is pressed
             {
-                Vector2 dir = ic.MousePosition - ic.LastPosition; // Calculate mouse movement
-                translate.X = dir.X; // Move camera horizontally
-                translate.Y = -dir.Y; // Move camera vertically
+                Vector2 dir = ic.MousePosition - ic.LastPosition;
+                translate.X = dir.X;
+                translate.Y = -dir.Y;
             }
 
             if (ic.GetWheel() != 0) // Check if mouse wheel was scrolled
             {
-                translate.Z = ic.GetWheel() * 2; // Zoom using mouse wheel
+                translate.Z = ic.GetWheel() * 2;
             }
 
 
@@ -124,18 +120,18 @@ namespace Editor.Engine
             {
                 bool modelTranslated = false; // Track if any model was moved
 
-                foreach (Models model in m_models) // Go through all models
+                foreach (Models model in m_models)
                 {
                     if (model.Selected) // Check if the model is selected
                     {
-                        modelTranslated = true; // Mark that a model was moved
+                        modelTranslated = true;
                         model.Translate(translate / 1000, m_camera); // Move the selected model
                     }
                 }
 
-                if (!modelTranslated) // If no model was moved
+                if (!modelTranslated) // If no model was moved, move the camera
                 {
-                    m_camera.Translate(translate * 0.001f); // Move the camera instead
+                    m_camera.Translate(translate * 0.001f);
                 }
             }
 
@@ -144,11 +140,9 @@ namespace Editor.Engine
 
 
 
-
-
         private void HandleRotate(float _delta)
         {
-            InputController ic = InputController.Instance; // Get input controller
+            InputController ic = InputController.Instance;
 
             // Check if right mouse button is pressed without Alt
             if ((ic.IsButtonDown(MouseButtons.Right)) && (!ic.IsKeyDown(Keys.Menu)))
@@ -157,21 +151,21 @@ namespace Editor.Engine
 
                 if (dir != Vector2.Zero) // Check if mouse moved
                 {
-                    Vector3 movement = new Vector3(dir.Y, dir.X, 0) * _delta; // Calculate rotation
-                    bool modelRotated = false; // Track if a model was rotated
+                    Vector3 movement = new Vector3(dir.Y, dir.X, 0) * _delta;
+                    bool modelRotated = false;
 
-                    foreach (Models model in m_models) // Go through all models
+                    foreach (Models model in m_models)
                     {
-                        if (model.Selected) // Check if model is selected
+                        if (model.Selected) // Check if model is selected, if so rotate it
                         {
-                            modelRotated = true; // Mark that a model was rotated
-                            model.Rotation += movement; // Rotate selected model
+                            modelRotated = true; 
+                            model.Rotation += movement;
                         }
                     }
 
-                    if (!modelRotated) // If no model is selected
+                    if (!modelRotated) // If no model is selected, rotate the camera
                     {
-                        m_camera.Rotate(movement); // Rotate camera instead
+                        m_camera.Rotate(movement);
                     }
                 }
             }
@@ -188,13 +182,13 @@ namespace Editor.Engine
             {
                 float l = ic.MousePosition.X - ic.LastPosition.X; // Get horizontal mouse movement
 
-                if (l != 0) // Check if mouse moved
+                if (l != 0)
                 {
                     l *= _delta; // Adjust scaling using time between frames
 
-                    foreach (Models model in m_models) // Go through all models
+                    foreach (Models model in m_models)
                     {
-                        if (model.Selected) // Check if model is selected
+                        if (model.Selected)
                         {
                             model.Scale += l; // Increase or decrease model size
                         }
@@ -208,36 +202,36 @@ namespace Editor.Engine
 
         private void HandlePick()
         {
-            InputController ic = InputController.Instance; // Get input controller
+            InputController ic = InputController.Instance;
 
             if (ic.IsButtonDown(MouseButtons.Left)) // Check if left mouse button is pressed
             {
-                Ray r = ic.GetPickRay(m_camera); // Create a ray from the mouse position
+                Ray r = ic.GetPickRay(m_camera);
 
-                foreach (Models model in m_models) // Check every model in the level
+                foreach (Models model in m_models)
                 {
-                    bool wasSelected = model.Selected; // Store previous selection
-                    bool isSelected = false; // Track if the model is clicked
+                    bool wasSelected = model.Selected;
+                    bool isSelected = false;
 
-                    foreach (ModelMesh mesh in model.Mesh.Meshes) // Check every mesh
+                    foreach (ModelMesh mesh in model.Mesh.Meshes)
                     {
-                        BoundingSphere s = mesh.BoundingSphere; // Get mesh bounding sphere
-                        s = s.Transform(model.GetTransform()); // Transform sphere to world position
+                        BoundingSphere s = mesh.BoundingSphere;
+                        s = s.Transform(model.GetTransform());
 
                         float? f = r.Intersects(s); // Check if mouse ray hits the model
 
-                        if (f.HasValue) // If the model was clicked
+                        if (f.HasValue) // If the model was clicked, select it
                         {
-                            isSelected = true; // Select model
-                            break; // No need to check other meshes
+                            isSelected = true;
+                            break;
                         }
                     }
 
-                    model.Selected = isSelected; // Update model selection
+                    model.Selected = isSelected;
 
-                    if (wasSelected != isSelected) // Check if selection changed
+                    if (wasSelected != isSelected)
                     {
-                        m_selectionChanged = true; // PropertyGrid needs updating
+                        m_selectionChanged = true;
                     }
                 }
             }
@@ -247,41 +241,13 @@ namespace Editor.Engine
 
 
 
-
-
-
-
-
-
-
-
-
-
         public void Update(float _delta)
         {
-            HandleTranslate(_delta); // Handle moving the camera
-            HandleRotate(_delta); // Handle rotating the camera
-            HandleScale(_delta); // Handle scaling the camera
-            HandlePick(); // Handle selecting objects with the mouse
+            HandleTranslate(_delta);
+            HandleRotate(_delta);
+            HandleScale(_delta);
+            HandlePick(); 
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         // Serialization
@@ -315,9 +281,9 @@ namespace Editor.Engine
 
         public override string ToString()
         {
-            string s = string.Empty; // Start with empty text
+            string s = string.Empty;
 
-            foreach (Models m in m_models) // Go through all models
+            foreach (Models m in m_models)
             {
                 if (m.Selected) // Check if the model is selected
                 {
@@ -327,18 +293,8 @@ namespace Editor.Engine
                 }
             }
 
-            return m_camera.ToString() + s; // Show camera position and selected model information
+            return m_camera.ToString() + s;
         }
-
-
-
-
-
-
-
-
-
-
 
     }
 }
