@@ -155,7 +155,7 @@ namespace Editor.Engine
             _effect.Parameters["View"].SetValue(_view);
             _effect.Parameters["Projection"].SetValue(_projection);
             _effect.Parameters["BaseTexture"].SetValue(BaseTexture);
-            _effect.Parameters["TextureTiling"].SetValue(15.0f);
+            _effect.Parameters["TextureTiling"].SetValue(1.0f);
             _effect.Parameters["LightDirection"].SetValue(LightDirection);
 
             Device.SetVertexBuffer(VertexBuffer);

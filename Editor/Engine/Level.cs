@@ -28,7 +28,7 @@ namespace Editor.Engine
         public void LoadContent(GraphicsDevice _device, ContentManager _content)
         {
             m_terrainEffect = _content.Load<Effect>("TerrainEffect");
-            m_terrain = new(_content.Load<Texture2D>("HeightMap"), _content.Load<Texture2D>("Grass"), 200, _device);
+            m_terrain = new(_content.Load<Texture2D>("VolcanoHeightMap"), _content.Load<Texture2D>("VolcanoTexture"), 120, _device);
         }
 
         public void AddModel(Models _model) // Adds model to level
