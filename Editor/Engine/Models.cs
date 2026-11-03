@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace Editor.Engine
 {
     // Represents and controls a 3D model
-    class Models : ISerializable
+    class Models : ISerializable, ISelectable
     {
         // Accessors
         public Model Mesh { get; set; } // Stores 3D model

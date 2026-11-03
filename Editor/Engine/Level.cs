@@ -37,14 +37,15 @@ namespace Editor.Engine
         }
 
 
-        public List<Models> GetSelectedModels()
+        public List<ISelectable> GetSelectedModels()
         {
-            List<Models> models = new List<Models>(); // Create an empty list
+            List<ISelectable> models = new();
 
             foreach (var model in m_models) // Go through all models
             {
                 if (model.Selected) models.Add(model); // Add selected models to the list
             }
+            if (m_terrain.Selected) models.Add(m_terrain); // Add selected terrain to the list
 
             return models; // Return all selected models
         }
@@ -192,6 +193,8 @@ namespace Editor.Engine
 
         private void HandlePick()
         {
+            float? f;
+            Matrix transform = Matrix.Identity;
             InputController ic = InputController.Instance; // Get input controller
 
             if (ic.IsButtonDown(MouseButtons.Left)) // Check if left mouse button is pressed
@@ -201,13 +204,13 @@ namespace Editor.Engine
                 foreach (Models model in m_models) // Check every model in the level
                 {
                     model.Selected = false; // First unselect the model
-                    Matrix transform = model.GetTransform(); // Get the model's world transformation matrix
+                    transform = model.GetTransform(); // Get the model's world transformation matrix
 
                     foreach (ModelMesh mesh in model.Mesh.Meshes) // Check every mesh in the model
                     {
                         BoundingSphere s = mesh.BoundingSphere; // Get mesh bounding sphere
                         s.Transform(ref transform, out s);         
-                        float? f = r.Intersects(s); // Check if the ray hits the sphere
+                        f = r.Intersects(s); // Check if the ray hits the sphere
                         if (f.HasValue) // If hit happened
                         {
                             f = HelpMath.PickTriangle(in mesh, ref r, ref transform); // Check if the ray hits the mesh triangles
@@ -218,6 +221,17 @@ namespace Editor.Engine
                         }
                     }
                 }
+
+                // Check terrain
+                transform = Matrix.Identity;
+                f = HelpMath.PickTriangle(in m_terrain, ref r, ref transform);
+                m_terrain.Selected = false;
+
+                if (f.HasValue)
+                {
+                    m_terrain.Selected = true;
+                }
+
             }
         }
 
@@ -228,22 +242,6 @@ namespace Editor.Engine
             HandleScale(_delta); // Handle scaling the camera
             HandlePick(); // Handle selecting objects with the mouse
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -293,12 +291,6 @@ namespace Editor.Engine
 
             return m_camera.ToString() + s; // Show camera position and selected model information
         }
-
-
-
-
-
-
 
 
 
