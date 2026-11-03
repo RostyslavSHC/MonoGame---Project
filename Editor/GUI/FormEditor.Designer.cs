@@ -39,8 +39,8 @@
             statusStrip1 = new System.Windows.Forms.StatusStrip();
             toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             splitContainer = new System.Windows.Forms.SplitContainer();
-            contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(components);
             propertyGrid = new System.Windows.Forms.PropertyGrid();
+            contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(components);
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
@@ -63,11 +63,12 @@
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             fileToolStripMenuItem.Text = "File";
+            fileToolStripMenuItem.Click += fileToolStripMenuItem_Click;
             // 
             // exitToolStripMenuItem
             // 
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
+            exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             exitToolStripMenuItem.Text = "Exit";
             exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
             // 
@@ -75,7 +76,7 @@
             // 
             projectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { createToolStripMenuItem, sToolStripMenuItem, loadToolStripMenuItem });
             projectToolStripMenuItem.Name = "projectToolStripMenuItem";
-            projectToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
+            projectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             projectToolStripMenuItem.Text = "Project";
             // 
             // createToolStripMenuItem
@@ -132,11 +133,6 @@
             splitContainer.SplitterDistance = 637;
             splitContainer.TabIndex = 2;
             // 
-            // contextMenuStrip1
-            // 
-            contextMenuStrip1.Name = "contextMenuStrip1";
-            contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
-            // 
             // propertyGrid
             // 
             propertyGrid.BackColor = System.Drawing.SystemColors.Control;
@@ -145,6 +141,11 @@
             propertyGrid.Name = "propertyGrid";
             propertyGrid.Size = new System.Drawing.Size(159, 404);
             propertyGrid.TabIndex = 0;
+            // 
+            // contextMenuStrip1
+            // 
+            contextMenuStrip1.Name = "contextMenuStrip1";
+            contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
             // 
             // FormEditor
             // 

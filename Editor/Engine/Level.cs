@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
@@ -17,22 +16,19 @@ namespace Editor.Engine
 
         // Members
         private List<Models> m_models = new(); // Stores all models in this level
-        private Camera m_camera = new(new Vector3(0, 1, 1), 16.0f / 9.0f); // Creates level camera (had to change Vector3(0, 2, 2) to Vector3(0, 1, 1) and 16/9 to 16.0f/9.0f) ------------------
-
+        private Camera m_camera = new(new Vector3(0, 400, 500), 16.0f / 9.0f);
+        private Effect m_terrainEffect = null;
+        private Terrain m_terrain = null;
 
 
         public Level() // Runs when level is created
         {
         }
 
-        public void LoadContent(ContentManager _content) // Loads level's files and assets
+        public void LoadContent(GraphicsDevice _device, ContentManager _content)
         {
-            //Models teapot = new(_content.Load<Model>("Teapot"), _content.Load<Texture>("Metal"), Vector3.Zero, 1.0f); // Creates teapot model
-            //teapot.SetShader(_content.Load<Effect>("MyShader")); // Gives teapot its shader
-            Models teapot = new(_content, "Teapot", "Metal", "MyShader", Vector3.Zero, 1.0f);
-            AddModel(teapot); // Adds teapot to the level
-            teapot = new(_content, "Teapot", "Metal", "MyShader", new Vector3(1, 0, 0), 1.0f);
-            AddModel(teapot);
+            m_terrainEffect = _content.Load<Effect>("TerrainEffect");
+            m_terrain = new(_content.Load<Texture2D>("HeightMap"), _content.Load<Texture2D>("Grass"), 200, _device);
         }
 
         public void AddModel(Models _model) // Adds model to level
@@ -66,6 +62,7 @@ namespace Editor.Engine
             {
                 m.Render(m_camera.View, m_camera.Projection); // Draws model using camera
             }
+            m_terrain.Draw(m_terrainEffect, m_camera.View, m_camera.Projection); // Draws terrain
         }
 
 
@@ -199,21 +196,25 @@ namespace Editor.Engine
 
             if (ic.IsButtonDown(MouseButtons.Left)) // Check if left mouse button is pressed
             {
-                Ray r = ic.GetPickRay(m_camera); // Create a ray from the mouse position
+                Ray r = HelpMath.GetPickRay(ic.MousePosition, m_camera); // Create a ray from the mouse position
 
                 foreach (Models model in m_models) // Check every model in the level
                 {
                     model.Selected = false; // First unselect the model
+                    Matrix transform = model.GetTransform(); // Get the model's world transformation matrix
 
                     foreach (ModelMesh mesh in model.Mesh.Meshes) // Check every mesh in the model
                     {
                         BoundingSphere s = mesh.BoundingSphere; // Get mesh bounding sphere
-                        s = s.Transform(model.GetTransform()); // Move sphere to model's world position
-
+                        s.Transform(ref transform, out s);         
                         float? f = r.Intersects(s); // Check if the ray hits the sphere
                         if (f.HasValue) // If hit happened
                         {
-                            model.Selected = true; // Mark this model as selected
+                            f = HelpMath.PickTriangle(in mesh, ref r, ref transform); // Check if the ray hits the mesh triangles
+                            if (f.HasValue) // If hit happened
+                            {
+                                model.Selected = true; // Mark this model as selected
+                            }
                         }
                     }
                 }

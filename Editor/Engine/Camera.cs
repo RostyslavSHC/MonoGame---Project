@@ -16,7 +16,7 @@ namespace Editor.Engine
     internal class Camera : ISerializable
     {
         public Vector3 Position { get; set; } = new Vector3(0, 0, 0); // Stores camera position in 3D vector
-        public Vector3 Target { get; set;  } = new Vector3(0, 0, 0); // Stores what camera is looking at
+        public Vector3 Target { get; set;  } = new Vector3(300, 0, 0); // Stores what camera is looking at
         public Matrix View { get; set; } = Matrix.Identity; // Stores what camera is looking at (using Matrix)
         public Matrix Projection { get; set; } = Matrix.Identity; // Stores how 3D is shown on screen (using Matrix)
         public float NearPlane { get; set; } = 0.1f; // Closest visible distance

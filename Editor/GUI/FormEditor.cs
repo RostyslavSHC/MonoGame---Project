@@ -70,7 +70,7 @@ namespace Editor
             SaveFileDialog sfd = new();
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                Game.Project = new(Game.Content, sfd.FileName);
+                Game.Project = new(Game.GraphicsDevice, Game.Content, sfd.FileName);
                 Text = "Our Cool Editor - " + Game.Project.Name;
                 Game.AdjustAspectRatio();
             }
@@ -147,9 +147,9 @@ namespace Editor
             e.Handled = true; // Mark the event as handled
         }
 
+        private void fileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
 
-
-
-
+        }
     }
 }
