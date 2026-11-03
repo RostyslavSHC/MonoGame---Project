@@ -8,14 +8,20 @@ using System.IO;
 // Groups this code inside the GUI.Editor namespace
 namespace Editor.Editor
 {
-    internal class Project : ISerializable // Represents 1 editor project
+    internal class Project : ISerializable
     {
-        public Level CurrentLevel { get; set; } = null; // Stores current active level
-        public List<Level> Levels { get; set; } = new(); // Stores all levels in project
-        public string Folder { get; set; } = string.Empty; // Stores project folder
-        public string Name { get; set; } = string.Empty; // Stores project name
+        public event AssetsUpdated OnAssetsUpdated;
 
-        public Project() 
+        public Level CurrentLevel { get; private set; } = null;
+        public List<Level> Levels { get; private set; } = new();
+        public string Folder { get; private set; } = string.Empty;
+        public string ContentFolder { get; private set; } = string.Empty;
+        public string AssetFolder { get; private set; } = string.Empty;
+        public string ObjectFolder { get; private set; } = string.Empty;
+        public string Name { get; private set; } = string.Empty;
+        public AssetMonitor AssetMonitor { get; private set; } = null;
+
+        public Project()
         {
         }
 
@@ -29,9 +35,38 @@ namespace Editor.Editor
                 Name += ".oce"; // Adds .oce if missing
             }
 
+
+
+            // Create Content folder for assets, and copy the mgcb template
+            ContentFolder = Path.Combine(Folder, "Content");
+            AssetFolder = Path.Combine(ContentFolder, "bin");
+            ObjectFolder = Path.Combine(ContentFolder, "obj");
+            char d = Path.DirectorySeparatorChar;
+
+            if (!Directory.Exists(ContentFolder))
+            {
+                Directory.CreateDirectory(ContentFolder);
+                Directory.CreateDirectory(AssetFolder);
+                Directory.CreateDirectory(ObjectFolder);
+                File.Copy($"ContentTemplate.mgcb", ContentFolder + $"{d}Content.mgcb");
+            }
+
+            AssetMonitor = new(ObjectFolder);
+            AssetMonitor.OnAssetsUpdated += AssetMon_OnAssetsUpdated;
+
+
             // Add a default level
             AddLevel(_device, _content); // Creates first level
         }
+
+        private void AssetMon_OnAssetsUpdated()
+        {
+            OnAssetsUpdated?.Invoke();
+        }
+
+
+
+
 
         public void AddLevel(GraphicsDevice _device, ContentManager _content) // Adds new level
         {

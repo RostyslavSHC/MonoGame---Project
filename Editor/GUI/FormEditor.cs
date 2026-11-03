@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Text;
-using System.Windows.Forms;
-using Editor;
+﻿using Editor;
 using Editor.Editor;
 using Editor.Engine;
 using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
+using System.Data;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 
 
@@ -28,12 +29,14 @@ namespace Editor
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public GameEditor Game { get => m_game; set { m_game = value; HookEvents(); } }
         private GameEditor m_game = null;
+        private Process m_MGCBProcess = null;
 
 
         public FormEditor() // Runs when the editor window is created
         {
             InitializeComponent(); // Creates and loads the form controls
             KeyPreview = true; // Prevents the form from intercepting key presses
+            toolStripStatusLabel1.Text = Directory.GetCurrentDirectory(); // Shows the current working directory
         }
 
         private void HookEvents()
@@ -71,11 +74,31 @@ namespace Editor
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 Game.Project = new(Game.GraphicsDevice, Game.Content, sfd.FileName);
+                Game.Project.OnAssetsUpdated += Project_OnAssetsUpdated;
                 Text = "Our Cool Editor - " + Game.Project.Name;
                 Game.AdjustAspectRatio();
             }
             saveToolStripMenuItem_Click(sender, e);
         }
+
+        private void Project_OnAssetsUpdated()
+        {
+            this.Invoke((Delegate)(() =>
+            {
+                listBoxAssets.Items.Clear();
+                var assets = Game.Project.AssetMonitor.Assets;
+                if (!assets.ContainsKey(AssetTypes.MODEL)) return;
+
+                foreach (string asset in assets[AssetTypes.MODEL])
+                {
+                    listBoxAssets.Items.Add(asset);
+                }
+            }));
+        }
+
+
+
+
 
         // Save
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -147,9 +170,56 @@ namespace Editor
             e.Handled = true; // Mark the event as handled
         }
 
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string mgcbEditorPath = ConfigurationManager.AppSettings["MGCB_EditorPath"];
+            ProcessStartInfo startInfo = new()
+            {
+
+                
+                FileName = "\"" + Path.Combine(mgcbEditorPath, "mgcb-editor-windows.exe") + "\"",
+                Arguments = "\"" + Path.Combine(Game.Project.ContentFolder, "Content.mgcb") + "\""
+
+            };
+
+            m_MGCBProcess = Process.Start(startInfo);
+        }
+
+        private void FormEditor_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (m_MGCBProcess == null) return;
+            m_MGCBProcess.Kill();
+        }
+
+
+
+
+
+
+
+
+
+
+
         private void fileToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }

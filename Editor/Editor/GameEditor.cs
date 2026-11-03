@@ -85,6 +85,7 @@ namespace Editor.Editor
         {
             if (Project != null) // Check if a project exists
             {
+                Content.RootDirectory = Project.ContentFolder + "\\bin"; // Sets the content folder to the project's content folder
                 Project.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000); // Update the project using time between frames
                 InputController.Instance.Clear(); // Reset mouse input for the next frame
                 var models = Project.CurrentLevel.GetSelectedModels(); // Get all selected models
