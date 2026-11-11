@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Editor.Editor;
+using Microsoft.Xna.Framework.Content;
 using System.IO;
 
 // Groups this interface inside the Interfaces folder
@@ -8,6 +9,6 @@ namespace Editor.Engine.Interfaces
     internal interface ISerializable
     {
         public void Serialize(BinaryWriter _stream); // Saves object data into a binary file
-        public void Deserialize(BinaryReader _stream, ContentManager _content); // Loads object data from a binary file
+        public void Deserialize(BinaryReader _stream, GameEditor _game); // Loads object data from a binary file
     }
 }

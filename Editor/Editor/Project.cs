@@ -110,14 +110,14 @@ namespace Editor.Editor
         }
 
         // Deserialization
-        public void Deserialize(BinaryReader _stream, ContentManager _content)
+        public void Deserialize(BinaryReader _stream, GameEditor _game)
         {
             int levelCount = _stream.ReadInt32();
 
             for (int count = 0; count < levelCount; count++)
             {
                 Level l = new();
-                l.Deserialize(_stream, _content);
+                l.Deserialize(_stream, _game);
                 Levels.Add(l);
             }
 

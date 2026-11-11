@@ -13,6 +13,8 @@ namespace Editor.Editor
     public class GameEditor : Game
     {
         internal Project Project { get; set; }
+        internal Texture DefaultTexture { get; set; }
+        internal Effect DefaultEffect { get; set; }
 
         private GraphicsDeviceManager m_graphics; // Manages graphics
         private FormEditor m_parent; // Stores the editor window
@@ -75,12 +77,46 @@ namespace Editor.Editor
             */
 
             m_spriteBatch = new(GraphicsDevice); // Creates the sprite batch
+            // Load editor default content
             m_fonts = new(); // Creates the font controller
             m_fonts.LoadContent(Content); // Loads the fonts
+            DefaultTexture = Content.Load<Texture>("DefaultTexture");
+            DefaultEffect = Content.Load<Effect>("DefaultShader");
         }
 
-        // Runs every frame to update the game
 
+
+
+
+        private void UpdateSelected()
+        {
+            if (Models.SelectedDirty)
+            {
+                var models = Project.CurrentLevel.GetSelectedModels();
+                if (models.Count == 0)
+                {
+                    m_parent.propertyGrid.SelectedObject = null;
+                }
+                else if (models.Count > 1)
+                {
+                    m_parent.propertyGrid.SelectedObjects = models.ToArray();
+                }
+                else
+                {
+                    m_parent.propertyGrid.SelectedObject = models[0];
+                }
+            }
+
+            Models.SelectedDirty = false;
+        }
+
+
+
+
+
+
+
+        // Runs every frame to update the game
         protected override void Update(GameTime gameTime)
         {
             if (Project != null) // Check if a project exists
@@ -88,20 +124,7 @@ namespace Editor.Editor
                 Content.RootDirectory = Project.ContentFolder + "\\bin"; // Sets the content folder to the project's content folder
                 Project.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000); // Update the project using time between frames
                 InputController.Instance.Clear(); // Reset mouse input for the next frame
-                var models = Project.CurrentLevel.GetSelectedModels(); // Get all selected models
-
-                if (models.Count == 0) // No models selected
-                {
-                    m_parent.propertyGrid.SelectedObject = null; // Clear property grid
-                }
-                else if (models.Count > 1) // Multiple models selected
-                {
-                    m_parent.propertyGrid.SelectedObjects = models.ToArray(); // Show multiple models
-                }
-                else // One model selected
-                {
-                    m_parent.propertyGrid.SelectedObject = models[0]; // Show selected model
-                }
+                UpdateSelected();
             }
 
             base.Update(gameTime); // Run normal game update

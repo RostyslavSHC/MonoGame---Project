@@ -8,6 +8,7 @@ using Editor.Engine.Interfaces;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
+using Editor.Editor;
 
 // Groups this code inside the Editor project
 namespace Editor.Engine
@@ -105,7 +106,7 @@ namespace Editor.Engine
             _stream.Write(FarPlane); // Serializes Y value
             _stream.Write(AspectRatio); // Serializes Z value
         }
-        public void Deserialize(BinaryReader _stream, ContentManager _content) // Deserializes the camera
+        public void Deserialize(BinaryReader _stream, GameEditor _game) // Deserializes the camera
         {
             Position = HelpDeserialize.Vec3(_stream); // Deserializes the camera position
             NearPlane = _stream.ReadSingle(); // Deserializes the camera near plane

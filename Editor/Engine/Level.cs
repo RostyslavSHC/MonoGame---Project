@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using System.Windows.Forms;
+using Editor.Editor;
 
 // Groups this code inside the Editor project
 namespace Editor.Engine
@@ -27,8 +28,8 @@ namespace Editor.Engine
 
         public void LoadContent(GraphicsDevice _device, ContentManager _content)
         {
-            m_terrainEffect = _content.Load<Effect>("TerrainEffect");
-            m_terrain = new(_content.Load<Texture2D>("HeightMap"), _content.Load<Texture2D>("Grass"), 200, _device);
+            // m_terrainEffect = _content.Load<Effect>("TerrainEffect");
+            // m_terrain = new(_content.Load<Texture2D>("HeightMap"), _content.Load<Texture2D>("Grass"), 200, _device);
         }
 
         public void AddModel(Models _model) // Adds model to level
@@ -45,8 +46,10 @@ namespace Editor.Engine
             {
                 if (model.Selected) models.Add(model); // Add selected models to the list
             }
-            if (m_terrain.Selected) models.Add(m_terrain); // Add selected terrain to the list
-
+            if (m_terrainEffect != null)
+            {
+                if (m_terrain.Selected) models.Add(m_terrain); // Add selected terrain to the list
+            }
             return models; // Return all selected models
         }
 
@@ -63,7 +66,10 @@ namespace Editor.Engine
             {
                 m.Render(m_camera.View, m_camera.Projection); // Draws model using camera
             }
-            m_terrain.Draw(m_terrainEffect, m_camera.View, m_camera.Projection); // Draws terrain
+            if (m_terrain != null)
+            {
+                m_terrain.Draw(m_terrainEffect, m_camera.View, m_camera.Projection); // Draws terrain
+            }
         }
 
 
@@ -223,13 +229,16 @@ namespace Editor.Engine
                 }
 
                 // Check terrain
-                transform = Matrix.Identity;
-                f = HelpMath.PickTriangle(in m_terrain, ref r, ref transform);
-                m_terrain.Selected = false;
-
-                if (f.HasValue)
+                if (m_terrain != null)
                 {
-                    m_terrain.Selected = true;
+                    transform = Matrix.Identity;
+                    f = HelpMath.PickTriangle(in m_terrain, ref r, ref transform);
+                    m_terrain.Selected = false;
+
+                    if (f.HasValue)
+                    {
+                        m_terrain.Selected = true;
+                    }
                 }
 
             }
@@ -260,18 +269,18 @@ namespace Editor.Engine
         }
 
         // Deserialization
-        public void Deserialize(BinaryReader _stream, ContentManager _content)
+        public void Deserialize(BinaryReader _stream, GameEditor _game)
         {
             int modelCount = _stream.ReadInt32();
 
             for (int count = 0; count < modelCount; count++)
             {
                 Models m = new();
-                m.Deserialize(_stream, _content);
+                m.Deserialize(_stream, _game);
                 m_models.Add(m);
             }
 
-            m_camera.Deserialize(_stream, _content);
+            m_camera.Deserialize(_stream, _game);
         }
 
 
