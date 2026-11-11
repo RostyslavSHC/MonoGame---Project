@@ -76,7 +76,7 @@
             // exitToolStripMenuItem
             // 
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            exitToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
             exitToolStripMenuItem.Text = "Exit";
             exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
             // 
@@ -84,7 +84,7 @@
             // 
             projectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { createToolStripMenuItem, sToolStripMenuItem, loadToolStripMenuItem });
             projectToolStripMenuItem.Name = "projectToolStripMenuItem";
-            projectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            projectToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
             projectToolStripMenuItem.Text = "Project";
             // 
             // createToolStripMenuItem
@@ -118,7 +118,7 @@
             // Import
             // 
             Import.Name = "Import";
-            Import.Size = new System.Drawing.Size(180, 22);
+            Import.Size = new System.Drawing.Size(110, 22);
             Import.Text = "Import";
             Import.Click += importToolStripMenuItem_Click;
             // 
@@ -147,6 +147,7 @@
             // splitContainer.Panel1
             // 
             splitContainer.Panel1.SizeChanged += splitContainer_Panel1_SizeChanged;
+            splitContainer.Panel1.Paint += splitContainer_Panel1_Paint;
             // 
             // splitContainer.Panel2
             // 

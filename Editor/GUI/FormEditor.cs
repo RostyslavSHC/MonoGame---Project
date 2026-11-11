@@ -75,6 +75,7 @@ namespace Editor
             {
                 Game.Project = new(Game.GraphicsDevice, Game.Content, sfd.FileName);
                 Game.Project.OnAssetsUpdated += Project_OnAssetsUpdated;
+                Game.Project.AssetMonitor.UpdateAssetDB();
                 Text = "Our Cool Editor - " + Game.Project.Name;
                 Game.AdjustAspectRatio();
             }
@@ -89,9 +90,18 @@ namespace Editor
                 var assets = Game.Project.AssetMonitor.Assets;
                 if (!assets.ContainsKey(AssetTypes.MODEL)) return;
 
-                foreach (string asset in assets[AssetTypes.MODEL])
+
+                foreach (AssetTypes assetType in Enum.GetValues(typeof(AssetTypes)))
                 {
-                    listBoxAssets.Items.Add(asset);
+                    if (assets.ContainsKey(assetType))
+                    {
+                        listBoxAssets.Items.Add(assetType.ToString().ToUpper() + "S:");
+                        foreach (string asset in assets[assetType])
+                        {
+                            listBoxAssets.Items.Add(asset);
+                        }
+                        listBoxAssets.Items.Add(" ");
+                    }
                 }
             }));
         }
@@ -177,7 +187,7 @@ namespace Editor
             ProcessStartInfo startInfo = new()
             {
 
-                
+
                 FileName = "\"" + Path.Combine(mgcbEditorPath, "mgcb-editor-windows.exe") + "\"",
                 Arguments = "\"" + Path.Combine(Game.Project.ContentFolder, "Content.mgcb") + "\""
 
@@ -207,19 +217,9 @@ namespace Editor
 
         }
 
+        private void splitContainer_Panel1_Paint(object sender, PaintEventArgs e)
+        {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+        }
     }
 }
