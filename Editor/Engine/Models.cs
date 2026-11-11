@@ -15,10 +15,11 @@ using System.Threading.Tasks;
 namespace Editor.Engine
 {
     // Represents and controls a 3D model
-    class Models : ISerializable, ISelectable
+    class Models : ISerializable, ISelectable, IMaterial
     {
         // Accessors
         public Model Mesh { get; set; } // Stores 3D model
+        public Material Material { get; private set; }
         public Texture Texture { get; set; } // Stores texture placed on model
         public Effect Shader { get; set; } // Stores shader used to draw model
         public Vector3 Position { get => m_position; set { m_position = value; } } // Gets or changes the model position
@@ -68,53 +69,61 @@ namespace Editor.Engine
         }
 
         public void Create(GameEditor _game,
-                           string _model,
-                           string _texture,
-                           string _effect,
-                           Vector3 _position,
-                           float _scale)
+                   string _model,
+                   string _texture,
+                   string _effect,
+                   Vector3 _position,
+                   float _scale)
         {
             Mesh = _game.Content.Load<Model>(_model);
             Mesh.Tag = _model;
-
-            if (_texture == "DefaultTexture")
-            {
-                Texture = _game.DefaultTexture;
-            }
-            else
-            {
-                Texture = _game.Content.Load<Texture>(_texture);
-            }
-
-            Texture.Tag = _texture;
-
-            if (_effect == "DefaultEffect")
-            {
-                Shader = _game.DefaultEffect;
-            }
-            else
-            {
-                Shader = _game.Content.Load<Effect>(_effect);
-            }
-
-            Shader.Tag = _effect;
-            SetShader(Shader);
+            Material = new Material();
+            SetTexture(_game, _texture);
+            SetShader(_game, _effect);
             m_position = _position;
             Scale = _scale;
         }
 
-
-
-        public void SetShader(Effect _effect) // Sets shader for model
+        public void SetShader(Effect _effect)
         {
-            Shader = _effect; // Saves shader
-            foreach (ModelMesh mesh in Mesh.Meshes) // Goes through every mesh in model
+            Material.Effect = _effect;
+            foreach (ModelMesh mesh in Mesh.Meshes)
             {
-                foreach (ModelMeshPart meshPart in mesh.MeshParts) // Loops through every mesh part
+                foreach (ModelMeshPart meshPart in mesh.MeshParts)
                 {
-                    meshPart.Effect = Shader; // Applies shader to that mesh part
+                    meshPart.Effect = Material.Effect;
                 }
             }
+        }
+
+
+
+
+        public void SetTexture(GameEditor _game, string _texture)
+        {
+            if (_texture == "DefaultTexture")
+            {
+                Material.Diffuse = _game.DefaultTexture;
+            }
+            else
+            {
+                Material.Diffuse = _game.Content.Load<Texture>(_texture);
+            }
+            Material.Diffuse.Tag = _texture;
+        }
+
+        public void SetShader(GameEditor _game, string _effect)
+        {
+            if (_effect == "DefaultEffect")
+            {
+                Material.Effect = _game.DefaultEffect;
+            }
+            else
+            {
+                Material.Effect = _game.Content.Load<Effect>(_effect);
+            }
+            Material.Effect.Tag = _effect;
+            SetShader(Material.Effect);
         }
 
 
@@ -161,20 +170,23 @@ namespace Editor.Engine
                    Matrix.CreateTranslation(Position); // Applies position
         }
 
-        public void Render(Matrix _view, Matrix _projection) // Receives camera view matrix and camera projection matrix
+        public void Render(Camera _camera)
         {
-            // m_position.X += 0.001f; // Slowly moves the model on the X axis. I commented it because othervise teapot is tooo much to the right --------------------
-            // m_rotation.Y += 0.005f; // Slowly rotates the model on the Y axis
+            Material.Effect.Parameters["World"]?.SetValue(GetTransform());
+            Material.Effect.Parameters["WorldViewProjection"]?.SetValue(GetTransform() *
+                                                                      _camera.View *
+                                                                      _camera.Projection);
+            Material.Effect.Parameters["Texture"]?.SetValue(Material.Diffuse);
+            Material.Effect.Parameters["Tint"]?.SetValue(Selected);
+            Material.Effect.Parameters["CameraPosition"]?.SetValue(_camera.Position);
+            Material.Effect.Parameters["View"]?.SetValue(_camera.View);
+            Material.Effect.Parameters["Projection"]?.SetValue(_camera.Projection);
+            Material.Effect.Parameters["TextureTiling"]?.SetValue(15.0f);
+            Material.Effect.Parameters["LightDirection"]?.SetValue(Vector3.One);
 
-            Shader.Parameters["World"].SetValue(GetTransform()); // Sends model transform to shader
-            Shader.Parameters["WorldViewProjection"].SetValue(GetTransform() * _view * _projection); // Sends all rendering matrices to shader
-            Shader.Parameters["Texture"].SetValue(Texture); // Sends texture to shader
-            Shader.Parameters["Tint"].SetValue(Selected);
-
-
-            foreach (ModelMesh mesh in Mesh.Meshes) // Loop through every mesh
+            foreach (ModelMesh mesh in Mesh.Meshes)
             {
-                mesh.Draw(); // Draws the mesh
+                mesh.Draw();
             }
         }
 
@@ -186,8 +198,8 @@ namespace Editor.Engine
         public void Serialize(BinaryWriter _stream)
         {
             _stream.Write(Mesh.Tag.ToString());
-            _stream.Write(Texture.Tag.ToString());
-            _stream.Write(Shader.Tag.ToString());
+            _stream.Write(Material.Diffuse.Tag.ToString());
+            _stream.Write(Material.Effect.Tag.ToString());
             HelpSerialize.Vec3(_stream, Position);
             HelpSerialize.Vec3(_stream, Rotation);
             _stream.Write(Scale);
@@ -201,6 +213,7 @@ namespace Editor.Engine
             Position = HelpDeserialize.Vec3(_stream);
             Rotation = HelpDeserialize.Vec3(_stream);
             Scale = _stream.ReadSingle();
+            Material = new Material();
             Create(_game, mesh, texture, shader, Position, Scale);
         }
 
