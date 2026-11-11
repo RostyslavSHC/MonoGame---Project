@@ -40,7 +40,8 @@ namespace Editor.Editor
             // Create Content folder for assets, and copy the mgcb template
             ContentFolder = Path.Combine(Folder, "Content");
             AssetFolder = Path.Combine(ContentFolder, "bin");
-            ObjectFolder = Path.Combine(ContentFolder, "obj");
+            // ObjectFolder = Path.Combine(ContentFolder, "obj"); --------------------------------------------
+            ObjectFolder = Path.Combine(ContentFolder, "obj", "Windows");
             char d = Path.DirectorySeparatorChar;
 
             if (!Directory.Exists(ContentFolder))
