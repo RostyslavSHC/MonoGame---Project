@@ -40,7 +40,7 @@ namespace Editor.Editor
         {
             bool updated = false;
             AssetTypes assetType = AssetTypes.MODEL;
-            using var inStream = new FileStream(m_metaInfo,
+                using var inStream = new FileStream(m_metaInfo,
                                                 FileMode.Open,
                                                 FileAccess.Read,
                                                 FileShare.ReadWrite);
