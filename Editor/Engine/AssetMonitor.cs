@@ -39,6 +39,7 @@ namespace Editor.Editor
 
         public void UpdateAssetDB()
         {
+            if (!File.Exists(m_metaInfo)) return; // Skip if the content has not been built yet ----------------------------------
             bool updated = false;
             AssetTypes assetType = AssetTypes.MODEL;
                 using var inStream = new FileStream(m_metaInfo,
@@ -68,6 +69,9 @@ namespace Editor.Editor
                         break;
                     case "\"EffectProcessor\"":
                         assetType = AssetTypes.EFFECT;
+                        break;
+                    case "\"FontDescriptionProcessor\"":
+                        assetType = AssetTypes.FONT;
                         break;
                     default:
                         Debug.Assert(false, "Unhandled processor.");
