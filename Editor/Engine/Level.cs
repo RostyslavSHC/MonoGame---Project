@@ -26,31 +26,30 @@ namespace Editor.Engine
         {
         }
 
-        public void LoadContent(GraphicsDevice _device, ContentManager _content)
+        public void LoadContent(GameEditor _game)
         {
-            // m_terrainEffect = _content.Load<Effect>("TerrainEffect");
-            // m_terrain = new(_content.Load<Texture2D>("HeightMap"), _content.Load<Texture2D>("Grass"), 200, _device);
+            m_terrain = new(_game.DefaultEffect, _game.DefaultHeightMap,
+                            _game.DefaultGrass, 200, _game.GraphicsDevice);
         }
 
-        public void AddModel(Models _model) // Adds model to level
+        public void AddModel(Models _model)
         {
-            m_models.Add(_model); // Stores model in list
+            m_models.Add(_model);
         }
-
 
         public List<ISelectable> GetSelectedModels()
         {
             List<ISelectable> models = new();
+            foreach (var model in m_models)
+            {
+                if (model.Selected) models.Add(model);
+            }
+            if (m_terrain != null)
+            {
+                if (m_terrain.Selected) models.Add(m_terrain);
+            }
 
-            foreach (var model in m_models) // Go through all models
-            {
-                if (model.Selected) models.Add(model); // Add selected models to the list
-            }
-            if (m_terrainEffect != null)
-            {
-                if (m_terrain.Selected) models.Add(m_terrain); // Add selected terrain to the list
-            }
-            return models; // Return all selected models
+            return models;
         }
 
 
@@ -64,11 +63,11 @@ namespace Editor.Engine
         {
             foreach (Models m in m_models) // Goes through every model
             {
-                m.Render(m_camera.View, m_camera.Projection); // Draws model using camera
+                m.Render(m_camera); // Draws model using camera
             }
             if (m_terrain != null)
             {
-                m_terrain.Draw(m_terrainEffect, m_camera.View, m_camera.Projection); // Draws terrain
+                m_terrain.Render(m_camera); // Draws terrain
             }
         }
 
@@ -197,32 +196,31 @@ namespace Editor.Engine
 
 
 
-        private void HandlePick()
+        internal ISelectable HandlePick(bool _select = true)
         {
             float? f;
             Matrix transform = Matrix.Identity;
-            InputController ic = InputController.Instance; // Get input controller
-
-            if (ic.IsButtonDown(MouseButtons.Left)) // Check if left mouse button is pressed
+            InputController ic = InputController.Instance;
+            if (ic.IsButtonDown(MouseButtons.Left))
             {
-                Ray r = HelpMath.GetPickRay(ic.MousePosition, m_camera); // Create a ray from the mouse position
-
-                foreach (Models model in m_models) // Check every model in the level
+                Ray r = HelpMath.GetPickRay(ic.MousePosition, m_camera);
+                // Check models
+                foreach (Models model in m_models)
                 {
-                    model.Selected = false; // First unselect the model
-                    transform = model.GetTransform(); // Get the model's world transformation matrix
-
-                    foreach (ModelMesh mesh in model.Mesh.Meshes) // Check every mesh in the model
+                    if (_select) model.Selected = false;
+                    transform = model.GetTransform();
+                    foreach (ModelMesh mesh in model.Mesh.Meshes)
                     {
-                        BoundingSphere s = mesh.BoundingSphere; // Get mesh bounding sphere
-                        s.Transform(ref transform, out s);         
-                        f = r.Intersects(s); // Check if the ray hits the sphere
-                        if (f.HasValue) // If hit happened
+                        BoundingSphere s = mesh.BoundingSphere;
+                        s.Transform(ref transform, out s);
+                        f = r.Intersects(s);
+                        if (f.HasValue)
                         {
-                            f = HelpMath.PickTriangle(in mesh, ref r, ref transform); // Check if the ray hits the mesh triangles
-                            if (f.HasValue) // If hit happened
+                            f = HelpMath.PickTriangle(in mesh, ref r, ref transform);
+                            if (f.HasValue)
                             {
-                                model.Selected = true; // Mark this model as selected
+                                if (!_select) return model;
+                                model.Selected = true;
                             }
                         }
                     }
@@ -234,14 +232,15 @@ namespace Editor.Engine
                     transform = Matrix.Identity;
                     f = HelpMath.PickTriangle(in m_terrain, ref r, ref transform);
                     m_terrain.Selected = false;
-
                     if (f.HasValue)
                     {
+                        if (!_select) return m_terrain;
                         m_terrain.Selected = true;
                     }
                 }
-
             }
+
+            return null;
         }
 
         public void Update(float _delta)

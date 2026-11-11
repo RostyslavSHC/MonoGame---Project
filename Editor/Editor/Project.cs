@@ -26,7 +26,7 @@ namespace Editor.Editor
         }
 
         // Creates a new project
-        public Project(GraphicsDevice _device, ContentManager _content, string _name)
+        public Project(GameEditor _game, string _name)
         {
             Folder = Path.GetDirectoryName(_name); // Gets folder path
             Name = Path.GetFileName(_name); // Gets project file name
@@ -57,7 +57,7 @@ namespace Editor.Editor
 
 
             // Add a default level
-            AddLevel(_device, _content); // Creates first level
+            AddLevel(_game); // Creates first level
         }
 
         private void AssetMon_OnAssetsUpdated()
@@ -69,10 +69,10 @@ namespace Editor.Editor
 
 
 
-        public void AddLevel(GraphicsDevice _device, ContentManager _content) // Adds new level
+        public void AddLevel(GameEditor _game) // Adds new level
         {
             CurrentLevel = new(); // Create new level
-            CurrentLevel.LoadContent(_device, _content); // Loads level content
+            CurrentLevel.LoadContent(_game); // Loads level content
             Levels.Add(CurrentLevel); // Adds level to list
         }
         public void Update(float _delta)

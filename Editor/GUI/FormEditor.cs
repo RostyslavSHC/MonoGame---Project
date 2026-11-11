@@ -1,6 +1,7 @@
 ﻿using Editor;
 using Editor.Editor;
 using Editor.Engine;
+using Editor.Engine.Interfaces;
 using Editor.GUI;
 using Microsoft.Xna.Framework;
 using System;
@@ -31,6 +32,7 @@ namespace Editor
         public GameEditor Game { get => m_game; set { m_game = value; HookEvents(); } }
         private GameEditor m_game = null;
         private Process m_MGCBProcess = null;
+        private IMaterial m_dropped = null;
 
 
         public FormEditor() // Runs when the editor window is created
@@ -48,7 +50,9 @@ namespace Editor
             int index = listBoxAssets.IndexFromPoint(e.X, e.Y);
             if (index < 0) return;
             var lia = listBoxAssets.Items[index] as ListItemAsset;
-            if (lia.Type == AssetTypes.MODEL)
+            if ((lia.Type == AssetTypes.MODEL) ||
+                (lia.Type == AssetTypes.TEXTURE) ||
+                (lia.Type == AssetTypes.EFFECT))
             {
                 DoDragDrop(lia, DragDropEffects.Copy);
             }
@@ -74,7 +78,26 @@ namespace Editor
 
         private void GameForm_DragOver(object sender, DragEventArgs e)
         {
-            e.Effect = DragDropEffects.Copy;
+            InputController.Instance.MousePosition = new Vector2(e.X, e.Y);
+            e.Effect = DragDropEffects.None;
+            if (e.Data.GetDataPresent(typeof(ListItemAsset)))
+            {
+                var lia = e.Data.GetData(typeof(ListItemAsset)) as ListItemAsset;
+                if (lia.Type == AssetTypes.MODEL)
+                {
+                    e.Effect = DragDropEffects.Copy;
+                }
+                else if ((lia.Type == AssetTypes.TEXTURE) ||
+                         (lia.Type == AssetTypes.EFFECT))
+                {
+                    ISelectable obj = m_game.Project.CurrentLevel.HandlePick(false);
+                    if (obj is IMaterial) m_dropped = obj as IMaterial;
+                    if (m_dropped != null)
+                    {
+                        e.Effect = DragDropEffects.Copy;
+                    }
+                }
+            }
         }
 
         private void GameForm_DragDrop(object sender, DragEventArgs e)
@@ -82,9 +105,19 @@ namespace Editor
             if (e.Data.GetDataPresent(typeof(ListItemAsset)))
             {
                 var lia = e.Data.GetData(typeof(ListItemAsset)) as ListItemAsset;
-                Models model = new(m_game, lia.Name, "DefaultTexture",
-                                   "DefaultEffect", Vector3.Zero, 1.0f);
-                m_game.Project.CurrentLevel.AddModel(model);
+                if (lia.Type == AssetTypes.MODEL)
+                {
+                    Models model = new(m_game, lia.Name, "DefaultTexture", "DefaultEffect", Vector3.Zero, 1.0f);
+                    m_game.Project.CurrentLevel.AddModel(model);
+                }
+                else if (lia.Type == AssetTypes.TEXTURE)
+                {
+                    m_dropped?.SetTexture(m_game, lia.Name);
+                }
+                else if (lia.Type == AssetTypes.EFFECT)
+                {
+                    m_dropped?.SetShader(m_game, lia.Name);
+                }
             }
         }
 
@@ -119,7 +152,7 @@ namespace Editor
             SaveFileDialog sfd = new();
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                Game.Project = new(Game.GraphicsDevice, Game.Content, sfd.FileName);
+                Game.Project = new(Game, sfd.FileName);
                 Game.Project.OnAssetsUpdated += Project_OnAssetsUpdated;
                 Game.Project.AssetMonitor.UpdateAssetDB();
                 Text = "Our Cool Editor - " + Game.Project.Name;

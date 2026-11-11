@@ -20,8 +20,8 @@ namespace Editor.Engine
         // Accessors
         public Model Mesh { get; set; } // Stores 3D model
         public Material Material { get; private set; }
-        public Texture Texture { get; set; } // Stores texture placed on model
-        public Effect Shader { get; set; } // Stores shader used to draw model
+        // public Texture Texture { get; set; } // Stores texture placed on model
+        // public Effect Shader { get; set; } // Stores shader used to draw model
         public Vector3 Position { get => m_position; set { m_position = value; } } // Gets or changes the model position
         public Vector3 Rotation { get => m_rotation; set { m_rotation = value; } } // Gets or changes the model rotation
         public float Scale { get; set; } // Stores the model size
