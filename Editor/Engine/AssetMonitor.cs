@@ -9,6 +9,7 @@ namespace Editor.Editor
 
     internal enum AssetTypes
     {
+        NONE,
         MODEL,
         TEXTURE,
         FONT,

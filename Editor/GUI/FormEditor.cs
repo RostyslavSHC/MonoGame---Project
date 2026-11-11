@@ -1,6 +1,7 @@
 ﻿using Editor;
 using Editor.Editor;
 using Editor.Engine;
+using Editor.GUI;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -84,26 +85,37 @@ namespace Editor
 
         private void Project_OnAssetsUpdated()
         {
-            this.Invoke((Delegate)(() =>
+            this.Invoke(delegate
             {
                 listBoxAssets.Items.Clear();
                 var assets = Game.Project.AssetMonitor.Assets;
                 if (!assets.ContainsKey(AssetTypes.MODEL)) return;
-
-
                 foreach (AssetTypes assetType in Enum.GetValues(typeof(AssetTypes)))
                 {
                     if (assets.ContainsKey(assetType))
                     {
-                        listBoxAssets.Items.Add(assetType.ToString().ToUpper() + "S:");
+                        listBoxAssets.Items.Add(new ListItemAsset()
+                        {
+                            Name = assetType.ToString().ToUpper() + "S:",
+                            Type = AssetTypes.NONE
+                        });
                         foreach (string asset in assets[assetType])
                         {
-                            listBoxAssets.Items.Add(asset);
+                            ListItemAsset lia = new()
+                            {
+                                Name = asset,
+                                Type = assetType
+                            };
+                            listBoxAssets.Items.Add(lia);
                         }
-                        listBoxAssets.Items.Add(" ");
+                        listBoxAssets.Items.Add(new ListItemAsset()
+                        {
+                            Name = " ",
+                            Type = AssetTypes.NONE
+                        });
                     }
                 }
-            }));
+            });
         }
 
 
