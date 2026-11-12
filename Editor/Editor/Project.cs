@@ -41,7 +41,8 @@ namespace Editor.Editor
             ContentFolder = Path.Combine(Folder, "Content");
             AssetFolder = Path.Combine(ContentFolder, "bin");
             // ObjectFolder = Path.Combine(ContentFolder, "obj"); --------------------------------------------
-            ObjectFolder = Path.Combine(ContentFolder, "obj", "Windows");
+            //ObjectFolder = Path.Combine(ContentFolder, "obj", "Windows");
+            ObjectFolder = Path.Combine(ContentFolder, "obj");
             char d = Path.DirectorySeparatorChar;
 
             if (!Directory.Exists(ContentFolder))
