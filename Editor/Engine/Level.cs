@@ -1,4 +1,5 @@
 ﻿using Editor.Engine.Interfaces;
+using Editor.Engine.Lights;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -18,6 +19,7 @@ namespace Editor.Engine
         // Members
         private List<Models> m_models = new(); // Stores all models in this level
         private Camera m_camera = new(new Vector3(0, 400, 500), 16.0f / 9.0f);
+        private Light m_light = new() { Position = new(0, 400, 500), Color = new(0.9f, 0.9f, 0.9f) };
         private Effect m_terrainEffect = null;
         private Terrain m_terrain = null;
 
@@ -59,15 +61,18 @@ namespace Editor.Engine
 
 
 
-        public void Render() // Draws level
+        public void Render()
         {
-            foreach (Models m in m_models) // Goes through every model
+            Renderer r = Renderer.Instance;
+            r.Camera = m_camera;
+            r.Light = m_light;
+            foreach (Models m in m_models)
             {
-                m.Render(m_camera); // Draws model using camera
+                r.Render(m);
             }
             if (m_terrain != null)
             {
-                m_terrain.Render(m_camera); // Draws terrain
+                r.Render(m_terrain);
             }
         }
 

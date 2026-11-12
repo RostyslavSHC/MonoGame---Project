@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace Editor.Engine
 {
     // Represents and controls a 3D model
-    class Models : ISerializable, ISelectable, IMaterial
+    class Models : ISerializable, IRenderable, ISelectable
     {
         // Accessors
         public Model Mesh { get; set; } // Stores 3D model
@@ -170,8 +170,9 @@ namespace Editor.Engine
                    Matrix.CreateTranslation(Position); // Applies position
         }
 
-        public void Render(Camera _camera)
+        public void Render() // Camera _camera
         {
+            /*
             Material.Effect.Parameters["World"]?.SetValue(GetTransform());
             Material.Effect.Parameters["WorldViewProjection"]?.SetValue(GetTransform() *
                                                                       _camera.View *
@@ -183,6 +184,7 @@ namespace Editor.Engine
             Material.Effect.Parameters["Projection"]?.SetValue(_camera.Projection);
             Material.Effect.Parameters["TextureTiling"]?.SetValue(15.0f);
             Material.Effect.Parameters["LightDirection"]?.SetValue(Vector3.One);
+            */
 
             foreach (ModelMesh mesh in Mesh.Meshes)
             {
