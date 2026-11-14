@@ -201,7 +201,7 @@ namespace Editor.Engine
             float? f;
             Matrix transform = Matrix.Identity;
             InputController ic = InputController.Instance;
-            if (ic.IsButtonDown(MouseButtons.Left))
+            if ((ic.IsButtonDown(MouseButtons.Left)) || (!_select))
             {
                 Ray r = HelpMath.GetPickRay(ic.MousePosition, m_camera);
                 // Check models

@@ -23,8 +23,8 @@ namespace Editor.Editor
         private SpriteBatch m_spriteBatch; // Draws text on screen
         private FontController m_fonts; // Manages fonts
 
-        RasterizerState m_rasterState = new RasterizerState(); // Controls how 3D surfaces are drawn
-        DepthStencilState m_depthStencilState = new DepthStencilState(); // Controls which objects appear in front
+        private RasterizerState m_rasterState = new RasterizerState(); // Controls how 3D surfaces are drawn
+        private DepthStencilState m_depthStencilState = new DepthStencilState(); // Controls which objects appear in front
 
         public GameEditor()
         {

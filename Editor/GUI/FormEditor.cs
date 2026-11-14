@@ -79,6 +79,8 @@ namespace Editor
         private void GameForm_DragOver(object sender, DragEventArgs e)
         {
             InputController.Instance.MousePosition = new Vector2(e.X, e.Y);
+            // System.Drawing.Point mousePos = ((Control)sender).PointToClient(new System.Drawing.Point(e.X, e.Y));
+            // InputController.Instance.MousePosition = new Vector2(mousePos.X, mousePos.Y);
             e.Effect = DragDropEffects.None;
             if (e.Data.GetDataPresent(typeof(ListItemAsset)))
             {
