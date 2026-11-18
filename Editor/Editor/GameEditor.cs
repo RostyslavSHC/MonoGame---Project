@@ -1,5 +1,6 @@
 ﻿using Editor.Editor;
 using Editor.Engine;
+using Editor.GUI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -47,7 +48,7 @@ namespace Editor.Editor
             gameForm.TopLevel = false; // Makes it part of another window
             gameForm.Dock = DockStyle.Fill; // Makes it fill the available space
             gameForm.FormBorderStyle = FormBorderStyle.None; // Removes the window border
-            m_parent.splitContainer.Panel1.Controls.Add(gameForm); // Adds the game window into Panel1
+            m_parent.splitContainer2.Panel2.Controls.Add(gameForm); // Adds the game window into Panel1
         }
 
         // Runs when the game starts
@@ -100,6 +101,7 @@ namespace Editor.Editor
                 if (models.Count == 0)
                 {
                     m_parent.propertyGrid.SelectedObject = null;
+                    m_parent.listBoxLevel.SelectedIndex = -1;
                 }
                 else if (models.Count > 1)
                 {
@@ -108,9 +110,16 @@ namespace Editor.Editor
                 else
                 {
                     m_parent.propertyGrid.SelectedObject = models[0];
+                    for (int count = 0; count < m_parent.listBoxLevel.Items.Count; count++)
+                    {
+                        ListItemLevel lil = m_parent.listBoxLevel.Items[count] as ListItemLevel;
+                        if (lil.Model == models[0])
+                        {
+                            m_parent.listBoxLevel.SetSelected(count, true);
+                        }
+                    }
                 }
             }
-
             Models.SelectedDirty = false;
         }
 

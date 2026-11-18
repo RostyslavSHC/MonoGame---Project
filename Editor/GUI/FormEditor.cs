@@ -78,12 +78,17 @@ namespace Editor
 
         private void GameForm_DragOver(object sender, DragEventArgs e)
         {
+
+            m_dropped = null;
+            Form gameForm = Control.FromHandle(m_game.Window.Handle) as Form;
+            var p = gameForm.PointToClient(new System.Drawing.Point(e.X, e.Y));
+            InputController.Instance.MousePosition = new Vector2(p.X, p.Y);
+
             // BUG HERE ------------------------------------------------------------------------------------------
             // InputController.Instance.MousePosition = new Vector2(e.X, e.Y);
 
-            System.Drawing.Point mousePos = ((Control)sender).PointToClient(new System.Drawing.Point(e.X, e.Y));
-            InputController.Instance.MousePosition = new Vector2(mousePos.X, mousePos.Y);
-
+            // System.Drawing.Point mousePos = ((Control)sender).PointToClient(new System.Drawing.Point(e.X, e.Y));
+            // InputController.Instance.MousePosition = new Vector2(mousePos.X, mousePos.Y);
 
 
             /*
@@ -126,6 +131,7 @@ namespace Editor
                 {
                     Models model = new(m_game, lia.Name, "DefaultTexture", "DefaultEffect", Vector3.Zero, 1.0f);
                     m_game.Project.CurrentLevel.AddModel(model);
+                    listBoxLevel.Items.Add(new ListItemLevel() { Model = model });
                 }
                 else if (lia.Type == AssetTypes.TEXTURE)
                 {
@@ -309,7 +315,16 @@ namespace Editor
             m_MGCBProcess.Kill();
         }
 
+        private void listBoxLevel_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBoxLevel.Items.Count == 0) return;
 
+            Game.Project.CurrentLevel.ClearSelectedModels();
+            int index = listBoxLevel.SelectedIndex;
+            if (index == -1) return;
+            var lia = listBoxLevel.Items[index] as ListItemLevel;
+            lia.Model.Selected = true;
+        }
 
 
 
@@ -325,6 +340,16 @@ namespace Editor
         }
 
         private void splitContainer_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void splitContainer3_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
