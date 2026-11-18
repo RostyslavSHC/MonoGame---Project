@@ -23,7 +23,7 @@ namespace Editor.Engine
         public Material Material { get; private set; }
         // public Texture Texture { get; set; } // Stores texture placed on model
         // public Effect Shader { get; set; } // Stores shader used to draw model
-        public SoundEffectInstance[] SoundEffects { get; private set; }
+        public SFXInstance[] SoundEffects { get; private set; }
         public Vector3 Position { get => m_position; set { m_position = value; } } // Gets or changes the model position
         public Vector3 Rotation { get => m_rotation; set { m_rotation = value; } } // Gets or changes the model rotation
         public float Scale { get; set; } // Stores the model size
@@ -86,7 +86,7 @@ namespace Editor.Engine
             SetShader(_game, _effect);
             m_position = _position;
             Scale = _scale;
-            SoundEffects = new SoundEffectInstance[Enum.GetNames(typeof(SoundEffectTypes)).Length];
+            SoundEffects ??= new SFXInstance[Enum.GetNames(typeof(SoundEffectTypes)).Length]; // Common assignment
         }
 
         public void SetShader(Effect _effect)
@@ -210,6 +210,20 @@ namespace Editor.Engine
             HelpSerialize.Vec3(_stream, Position);
             HelpSerialize.Vec3(_stream, Rotation);
             _stream.Write(Scale);
+            _stream.Write(Selected);
+            _stream.Write(Name);
+            _stream.Write(SoundEffects.Length);
+            foreach (var sfi in SoundEffects)
+            {
+                if (sfi == null)
+                {
+                    _stream.Write("empty!");
+                }
+                else
+                {
+                    _stream.Write(sfi.Name);
+                }
+            }
         }
 
         public void Deserialize(BinaryReader _stream, GameEditor _game)
@@ -220,7 +234,21 @@ namespace Editor.Engine
             Position = HelpDeserialize.Vec3(_stream);
             Rotation = HelpDeserialize.Vec3(_stream);
             Scale = _stream.ReadSingle();
-            Material = new Material();
+
+            // Material = new Material();
+            Selected = _stream.ReadBoolean();
+            Name = _stream.ReadString();
+
+            int sfxCount = _stream.ReadInt32();
+            SoundEffects = new SFXInstance[sfxCount];
+            for (int count = 0; count < sfxCount; count++)
+            {
+                string assetName = _stream.ReadString();
+                if (assetName != "empty!")
+                {
+                    SoundEffects[count] = SFXInstance.Create(_game, assetName);
+                }
+            }
             Create(_game, mesh, texture, shader, Position, Scale);
         }
 
