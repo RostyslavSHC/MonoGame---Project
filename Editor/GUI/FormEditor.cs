@@ -212,6 +212,8 @@ namespace Editor
                 Game.Project = new(Game, sfd.FileName);
                 Game.Project.OnAssetsUpdated += Project_OnAssetsUpdated;
                 Game.Project.AssetMonitor.UpdateAssetDB();
+                UpdatePrefabsList();
+                UpdateModelsList();
                 Text = "Our Cool Editor - " + Game.Project.Name;
                 Game.AdjustAspectRatio();
             }
@@ -257,6 +259,41 @@ namespace Editor
 
 
 
+
+
+
+
+        private void UpdateModelsList()
+        {
+            listBoxLevel.Items.Clear();
+            List<Models> models = Game.Project.CurrentLevel?.GetModelsList();
+            foreach (Models model in models)
+            {
+                listBoxLevel.Items.Add(new ListItemLevel() { Model = model });
+            }
+        }
+
+        private void UpdatePrefabsList()
+        {
+            listBoxPrefabs.Items.Clear();
+            string[] prefabs = Directory.GetFiles(Game.Project.Folder, "*.prefab");
+            foreach (string prefab in prefabs)
+            {
+                string fileName = Path.GetFileName(prefab);
+                ListItemPrefab item = new() { Name = fileName };
+                listBoxPrefabs.Items.Add(item);
+            }
+        }
+
+
+
+
+
+
+
+
+
+
         // Save
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -277,6 +314,12 @@ namespace Editor
                 using var reader = new BinaryReader(stream, Encoding.UTF8, false);
                 Game.Project = new();
                 Game.Project.Deserialize(reader, Game);
+
+                Game.Project.OnAssetsUpdated += Project_OnAssetsUpdated;
+                Game.Project.AssetMonitor.UpdateAssetDB();
+                UpdatePrefabsList();
+                UpdateModelsList();
+
                 Text = "Our Cool Editor - " + Game.Project.Name;
                 Game.AdjustAspectRatio();
             }

@@ -335,7 +335,7 @@ namespace Editor.Engine
             {
                 if (m.Selected) // Check if the model is selected
                 {
-                    // Add selected model's position and rotation to the text
+                    // Add selected model's position and rotation to the textF
                     s += "\nModel: Pos: " + m.Position.ToString() +
                          "  Rot: " + m.Rotation.ToString();
                 }
@@ -345,6 +345,15 @@ namespace Editor.Engine
         }
 
 
+
+
+
+
+
+        public List<Models> GetModelsList()
+        {
+            return m_models;
+        }
 
 
 
