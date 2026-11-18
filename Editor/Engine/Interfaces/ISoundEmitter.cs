@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework.Audio;
 
 namespace Editor.Engine.Interfaces
 {
-    internal class ISoundEmitter
+    enum SoundEffectTypes
     {
+        OnSelect = 0,
+        OnTakeDamage = 1
+    };
+
+    internal interface ISoundEmitter
+    {
+        public SoundEffectInstance[] SoundEffects { get; }
     }
 }

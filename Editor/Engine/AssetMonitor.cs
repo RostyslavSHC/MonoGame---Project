@@ -14,7 +14,8 @@ namespace Editor.Editor
         TEXTURE,
         FONT,
         AUDIO,
-        EFFECT
+        EFFECT,
+        SFX
     };
 
     internal class AssetMonitor
@@ -61,15 +62,24 @@ namespace Editor.Editor
                     case "\"TextureProcessor\"":
                         assetType = AssetTypes.TEXTURE;
                         break;
+                    /*
                     case "\"OggProcessor\"":
                         assetType = AssetTypes.AUDIO;
                         break;
                     case "\"SoundEffectProcessor\"":
                         assetType = AssetTypes.AUDIO;
                         break;
+                    */
+                    case "\"SongProcessor\"":
+                        assetType = AssetTypes.AUDIO;
+                        break;
                     case "\"EffectProcessor\"":
                         assetType = AssetTypes.EFFECT;
                         break;
+                    case "\"SoundEffectProcessor\"":
+                        assetType = AssetTypes.SFX;
+                        break;
+
                     case "\"FontDescriptionProcessor\"":
                         assetType = AssetTypes.FONT;
                         break;

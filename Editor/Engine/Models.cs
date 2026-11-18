@@ -1,10 +1,11 @@
 ﻿using Editor.Editor;
 using Editor.Engine.Interfaces;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using SharpDX.Direct2D1.Effects;
 using System;
+using SharpDX.Direct2D1.Effects;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,13 +16,14 @@ using System.Threading.Tasks;
 namespace Editor.Engine
 {
     // Represents and controls a 3D model
-    class Models : ISerializable, IRenderable, ISelectable
+    class Models : ISerializable, IRenderable, ISelectable, ISoundEmitter
     {
         // Accessors
         public Model Mesh { get; set; } // Stores 3D model
         public Material Material { get; private set; }
         // public Texture Texture { get; set; } // Stores texture placed on model
         // public Effect Shader { get; set; } // Stores shader used to draw model
+        public SoundEffectInstance[] SoundEffects { get; private set; }
         public Vector3 Position { get => m_position; set { m_position = value; } } // Gets or changes the model position
         public Vector3 Rotation { get => m_rotation; set { m_rotation = value; } } // Gets or changes the model rotation
         public float Scale { get; set; } // Stores the model size
@@ -84,6 +86,7 @@ namespace Editor.Engine
             SetShader(_game, _effect);
             m_position = _position;
             Scale = _scale;
+            SoundEffects = new SoundEffectInstance[Enum.GetNames(typeof(SoundEffectTypes)).Length];
         }
 
         public void SetShader(Effect _effect)

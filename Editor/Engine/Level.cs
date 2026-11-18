@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Audio;
 using System.IO;
 using System.Windows.Forms;
 using Editor.Editor;
@@ -266,12 +267,32 @@ namespace Editor.Engine
             return null;
         }
 
+
+        private void HandleAudio()
+        {
+            foreach (Models m in m_models)
+            {
+                if ((Models.SelectedDirty) &&
+                    (m.Selected))
+                {
+                    var sfi = m.SoundEffects[(int)SoundEffectTypes.OnSelect];
+                    if (sfi?.State == SoundState.Stopped)
+                    {
+                        sfi.Play();
+                    }
+                }
+            }
+        }
+
+
+
         public void Update(float _delta)
         {
             HandleTranslate(_delta); // Handle moving the camera
             HandleRotate(_delta); // Handle rotating the camera
             HandleScale(_delta); // Handle scaling the camera
             HandlePick(); // Handle selecting objects with the mouse
+            HandleAudio();
         }
 
 
