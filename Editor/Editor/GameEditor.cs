@@ -1,5 +1,6 @@
 ﻿using Editor.Editor;
 using Editor.Engine;
+using Editor.Engine.Scripting;
 using Editor.GUI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -130,17 +131,19 @@ namespace Editor.Editor
 
 
         // Runs every frame to update the game
-        protected override void Update(GameTime gameTime)
+        protected override void Update(GameTime _gameTime)
         {
-            if (Project != null) // Check if a project exists
+            if (Project != null)
             {
-                Content.RootDirectory = Project.ContentFolder + "\\bin"; // Sets the content folder to the project's content folder
-                Project.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000); // Update the project using time between frames
-                InputController.Instance.Clear(); // Reset mouse input for the next frame
+                ScriptController.Instance.Execute("BeforeUpdateMain");
+                Content.RootDirectory = Project.ContentFolder + "\\bin";
+                Project.Update((float)(_gameTime.ElapsedGameTime.TotalMilliseconds / 1000D));
+                InputController.Instance.Clear();
                 UpdateSelected();
+                ScriptController.Instance.Execute("AfterUpdateMain");
             }
+            base.Update(_gameTime);
 
-            base.Update(gameTime); // Run normal game update
         }
 
 
@@ -152,14 +155,15 @@ namespace Editor.Editor
 
             if (Project != null) // Check if a project exists
             {
-                GraphicsDevice.RasterizerState = m_rasterState; // Set how 3D surfaces are drawn
-                GraphicsDevice.DepthStencilState = m_depthStencilState; // Enable depth testing
-                Project.Render(); // Draw the project
-
-                m_spriteBatch.Begin(); // Start drawing text
-                m_fonts.Draw(m_spriteBatch, 20, InputController.Instance.ToString(), new Vector2(20, 20), Color.White); // Show pressed keys and buttons
-                m_fonts.Draw(m_spriteBatch, 16, Project.CurrentLevel.ToString(), new Vector2(20, 80), Color.Yellow); // Show level information
-                m_spriteBatch.End(); // Finish drawing text
+                ScriptController.Instance.Execute("BeforeRenderMain");
+                GraphicsDevice.RasterizerState = m_rasterState;
+                GraphicsDevice.DepthStencilState = m_depthStencilState;
+                Project.Render();
+                m_spriteBatch.Begin();
+                m_fonts.Draw(m_spriteBatch, 20, InputController.Instance.ToString(), new Vector2(20, 20), Color.White);
+                m_fonts.Draw(m_spriteBatch, 16, Project.CurrentLevel.ToString(), new Vector2(20, 80), Color.Yellow);
+                m_spriteBatch.End();
+                ScriptController.Instance.Execute("AfterRenderMain");
             }
 
 

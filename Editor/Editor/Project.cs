@@ -1,5 +1,6 @@
 ﻿using Editor.Engine;
 using Editor.Engine.Interfaces;
+using Editor.Engine.Scripting;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace Editor.Editor
         public string ContentFolder { get; private set; } = string.Empty;
         public string AssetFolder { get; private set; } = string.Empty;
         public string ObjectFolder { get; private set; } = string.Empty;
+        public string ScriptFolder { get; private set; } = string.Empty;
         public string Name { get; private set; } = string.Empty;
         public AssetMonitor AssetMonitor { get; private set; } = null;
 
@@ -26,6 +28,7 @@ namespace Editor.Editor
         }
 
         // Creates a new project
+
         public Project(GameEditor _game, string _name)
         {
             Folder = Path.GetDirectoryName(_name); // Gets folder path
@@ -35,14 +38,14 @@ namespace Editor.Editor
                 Name += ".oce"; // Adds .oce if missing
             }
 
-
-
             // Create Content folder for assets, and copy the mgcb template
             ContentFolder = Path.Combine(Folder, "Content");
             AssetFolder = Path.Combine(ContentFolder, "bin");
             // ObjectFolder = Path.Combine(ContentFolder, "obj"); --------------------------------------------
             //ObjectFolder = Path.Combine(ContentFolder, "obj", "Windows");
             ObjectFolder = Path.Combine(ContentFolder, "obj");
+            ScriptFolder = Path.Combine(Folder, "Scripts");
+
             char d = Path.DirectorySeparatorChar;
 
             if (!Directory.Exists(ContentFolder))
@@ -53,13 +56,24 @@ namespace Editor.Editor
                 File.Copy($"ContentTemplate.mgcb", ContentFolder + $"{d}Content.mgcb");
             }
 
+            if (!Directory.Exists(ScriptFolder))
+            {
+                Directory.CreateDirectory(ScriptFolder);
+            }
+
+            CreateScriptFile(ScriptFolder + $"{d}BeforeRender.lua");
+            CreateScriptFile(ScriptFolder + $"{d}AfterRender.lua");
+            CreateScriptFile(ScriptFolder + $"{d}BeforeUpdate.lua");
+            CreateScriptFile(ScriptFolder + $"{d}AfterUpdate.lua");
+
             AssetMonitor = new(ObjectFolder);
             AssetMonitor.OnAssetsUpdated += AssetMon_OnAssetsUpdated;
 
-
             // Add a default level
             AddLevel(_game); // Creates first level
+            ConfigureScripts();
         }
+
 
         private void AssetMon_OnAssetsUpdated()
         {
@@ -103,6 +117,7 @@ namespace Editor.Editor
             _stream.Write(ContentFolder);
             _stream.Write(AssetFolder);
             _stream.Write(ObjectFolder);
+            _stream.Write(ScriptFolder);
             _stream.Write(Levels.Count);
             int clIndex = Levels.IndexOf(CurrentLevel);
             foreach (Level level in Levels)
@@ -120,6 +135,7 @@ namespace Editor.Editor
             ContentFolder = _stream.ReadString();
             AssetFolder = _stream.ReadString();
             ObjectFolder = _stream.ReadString();
+            ScriptFolder = _stream.ReadString();
 
             int levelCount = _stream.ReadInt32();
             for (int count = 0; count < levelCount; count++)
@@ -133,11 +149,39 @@ namespace Editor.Editor
             CurrentLevel = Levels[clIndex];
             AssetMonitor = new(ObjectFolder);
             AssetMonitor.OnAssetsUpdated += AssetMonitor_OnAssetsUpdated;
+            ConfigureScripts();
         }
 
         private void AssetMonitor_OnAssetsUpdated()
         {
             OnAssetsUpdated?.Invoke();
+        }
+
+
+
+
+
+
+
+        private void CreateScriptFile(string _file)
+        {
+            string funcName = Path.GetFileNameWithoutExtension(_file);
+            if (!File.Exists(_file))
+            {
+                File.Create(_file).Close();
+                File.AppendAllLines(_file, new string[] { "function " + funcName + "Main()", "end" });
+            }
+        }
+
+        public void ConfigureScripts()
+        {
+            char d = Path.DirectorySeparatorChar;
+            var sc = ScriptController.Instance;
+            sc.LoadSharedObjects(this);
+            sc.LoadScriptFile(ScriptFolder + $"{d}BeforeRender.lua");
+            sc.LoadScriptFile(ScriptFolder + $"{d}AfterRender.lua");
+            sc.LoadScriptFile(ScriptFolder + $"{d}BeforeUpdate.lua");
+            sc.LoadScriptFile(ScriptFolder + $"{d}AfterUpdate.lua");
         }
 
 
